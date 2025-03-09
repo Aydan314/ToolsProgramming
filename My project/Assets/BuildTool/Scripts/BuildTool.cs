@@ -21,6 +21,7 @@ public class BuildTool : MonoBehaviour
     bool toolActive = false;
     List<GameObject> footPrint;
     float inputCooldown = 0.0f;
+    float clickCooldown = 0.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,6 +34,12 @@ public class BuildTool : MonoBehaviour
     {
         SceneView.duringSceneGui += OnSceneGUI;
         assetPackManager = GetComponent<AssetPackManager>();
+
+        if (assetPackManager == null)
+        {
+            Debug.LogError("Asset Pack Manager could not be found!");
+        }
+
         Debug.Log("- Press B to toggle build tool");
        
     }
@@ -44,16 +51,19 @@ public class BuildTool : MonoBehaviour
     }
 
     // Remove all nodes used for selection in world //
-    private void SelectionComplete()
+
+    private void DestroySelectionNodes()
     {
-        assetPackManager.Build(footPrint);
-
-        creatingGrid = false;
-
         foreach (var marker in footPrint)
         {
             DestroyImmediate(marker);
         }
+    }
+    private void SelectionComplete()
+    {
+        assetPackManager.Build(footPrint);
+        DestroySelectionNodes();
+        creatingGrid = false;
     }
 
     // Remove previous node in grid selection //
@@ -83,6 +93,7 @@ public class BuildTool : MonoBehaviour
         gridStart = point;
         newObject.transform.position = gridStart;
         newObject.GetComponent<BuildNode>().SetAsStartNode();
+        newObject.transform.parent = this.gameObject.transform;
         prevNode = newObject;
 
         footPrint.Add(newObject);
@@ -97,6 +108,7 @@ public class BuildTool : MonoBehaviour
 
             newObject.transform.position = gridPos;
             newObject.GetComponent<BuildNode>().ConnectTo(prevNode.transform.position);
+            newObject.transform.parent = this.gameObject.transform;
             prevNode = newObject;
 
             footPrint.Add(newObject);
@@ -160,12 +172,24 @@ public class BuildTool : MonoBehaviour
         }
         else if (inputCooldown != 0.0f) inputCooldown = 0.0f;
 
+        // Stops the user placing nodes too quickly //
+        if (clickCooldown > 0.0f)
+        {
+            clickCooldown -= Time.deltaTime;
+        }
+        else if (clickCooldown != 0.0f) clickCooldown = 0.0f;
+
 
         Event e = Event.current;
         Vector3 gridPos = new Vector3();
 
         if (creatingGrid)
         {
+            if (prevNode == null)
+            {
+                creatingGrid = false;
+                DestroySelectionNodes();
+            }
             if (toolActive)
             { 
                 // Creates a line in the direction the user is going to place a node //
@@ -209,6 +233,7 @@ public class BuildTool : MonoBehaviour
                     // User can press enter to create selection even if its not full, e.g for a single wall //
                     if (e.keyCode == KeyCode.Return)
                     {
+                        prevNode.GetComponent<BuildNode>().ConnectTo(prevNode.transform.position);
                         SelectionComplete();
                     }
                     // Deletes the previous node //
@@ -227,7 +252,7 @@ public class BuildTool : MonoBehaviour
                 if (e.type == EventType.MouseDown)
                 {
                     // Places a node into the scene //
-                    if (e.keyCode == KeyCode.Mouse0)
+                    if (e.keyCode == KeyCode.Mouse0 && clickCooldown == 0.0f)
                     {
                         Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                         RaycastHit hit;
@@ -244,7 +269,7 @@ public class BuildTool : MonoBehaviour
                             }
 
                         }
-
+                        clickCooldown = 0.5f;
 
                     }
                 }
