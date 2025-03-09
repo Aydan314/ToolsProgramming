@@ -435,6 +435,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1028114477}
   - component: {fileID: 1028114478}
+  - component: {fileID: 1028114480}
+  - component: {fileID: 1028114479}
   m_Layer: 0
   m_Name: AssetTool
   m_TagString: Untagged
@@ -471,6 +473,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   node: {fileID: 2885739837893975769, guid: 8842ce1a864560e459ae1991d8a3f842, type: 3}
   gridSize: 1
+--- !u!114 &1028114479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028114475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f70f60525a4ee844e81dbf32d1d83600, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1028114480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028114475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 731d5cd82de72454782f657646d0648d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assetBasePacks:
+  - name: Fences
+    gridSize: 1
+    assets:
+    - defaultRotation: 0
+      assetObject: {fileID: 919132149155446097, guid: 5d850fb4bc5b1ad4fba9bd232faf2212, type: 3}
+    brush: {fileID: 1028114479}
 --- !u!1 &1040314419
 GameObject:
   m_ObjectHideFlags: 0

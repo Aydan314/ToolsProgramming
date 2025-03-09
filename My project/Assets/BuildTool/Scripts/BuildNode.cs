@@ -4,15 +4,21 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 [ExecuteInEditMode]
-public class LineDraw : MonoBehaviour
+public class BuildNode : MonoBehaviour
 {
     LineRenderer lineRenderer;
-    Vector3 endPos;
-    Vector3 startPos;
+    Renderer renderer;
     bool connected = false;
 
     [SerializeField]
     public Color drawColour;
+    [SerializeField]
+    public Color startNodeColour;
+    [SerializeField]
+    public Color fullSelectionColour;
+    public bool isStartNode = false;
+    public Vector3 endPos;
+    public Vector3 startPos;
     void Start()
     {
         OnEnable();
@@ -23,6 +29,7 @@ public class LineDraw : MonoBehaviour
         SceneView.duringSceneGui += OnSceneGUI;
 
         lineRenderer = GetComponent<LineRenderer>();
+        renderer = GetComponent<Renderer>();
 
         if (!lineRenderer)
         {
@@ -40,8 +47,6 @@ public class LineDraw : MonoBehaviour
         SceneView.duringSceneGui -= OnSceneGUI;
         connected = false;
     }
-
-    // Update is called once per frame
     private void OnSceneGUI(SceneView sceneView)
     {
         if (connected)
@@ -60,5 +65,18 @@ public class LineDraw : MonoBehaviour
     {
         endPos = new Vector3();
         connected = false;
+    }
+    public void SetAsStartNode()
+    {
+        SetColour(startNodeColour);
+        isStartNode = true;
+    }
+    public void SetColour(Color colour)
+    {
+        renderer.material.color = colour;
+    }
+    public Color GetColour()
+    {
+        return renderer.material.color;
     }
 }

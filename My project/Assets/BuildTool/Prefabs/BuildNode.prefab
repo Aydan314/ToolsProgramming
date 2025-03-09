@@ -123,6 +123,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawColour: {r: 0, g: 1, b: 0.061501026, a: 0}
+  startNodeColour: {r: 0.9622642, g: 0.9311533, b: 0.086240634, a: 0}
+  fullSelectionColour: {r: 0.003775057, g: 0.5283019, b: 0, a: 0}
+  isStartNode: 0
 --- !u!120 &4140447420529656964
 LineRenderer:
   serializedVersion: 2
