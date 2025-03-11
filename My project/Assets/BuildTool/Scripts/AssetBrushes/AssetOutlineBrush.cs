@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class AssetOutlineBrush : AssetBaseBrush
@@ -14,12 +15,14 @@ public class AssetOutlineBrush : AssetBaseBrush
             GameObject marker = Selection[i];
             BuildNode buildNode = marker.GetComponent<BuildNode>();
 
-            BuildAssetsBetween(buildNode.startPos, buildNode.endPos, assetPack, root);
+            BuildAssetsBetween(buildNode, assetPack, root);
         }
     }
-    public void BuildAssetsBetween(Vector3 start, Vector3 end, AssetBasePack assetPack, GameObject rootObject)
+    public void BuildAssetsBetween(BuildNode node, AssetBasePack assetPack, GameObject rootObject)
     {
-        Asset asset = assetPack.assets[0];
+        Vector3 start = node.startPos;
+        Vector3 end = node.endPos;
+        Vector3 prevNodePos = node.prevNodePos;
 
         float distance = (end - start).magnitude;
 
@@ -46,15 +49,26 @@ public class AssetOutlineBrush : AssetBaseBrush
             rotation = 90;
         }
 
-        rotation += asset.defaultRotation;
-        
-        for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
+        if (assetPack.cornerAssets.Count > 0)
         {
-            GameObject newObject = Instantiate(asset.assetObject);
-            newObject.transform.position = start + (i * step);
-            newObject.transform.rotation = Quaternion.Euler(0, rotation, 0);
-            newObject.transform.parent = rootObject.transform;
+            Asset asset = assetPack.assets[0];
 
+            if (prevNodePos != start)
+            {
+                asset = assetPack.cornerAssets[0];
+               
+            }
+
+            PlaceAsset(asset.assetObject, rootObject, start, rotation + asset.defaultRotation);
+        }
+        if (assetPack.assets.Count > 0)
+        {
+            Asset asset = assetPack.assets[0];
+            
+            for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
+            {
+                PlaceAsset(asset.assetObject, rootObject, start + (i * step), rotation + asset.defaultRotation);
+            }
         }
     }
 }

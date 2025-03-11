@@ -19,6 +19,7 @@ public class BuildNode : MonoBehaviour
     public bool isStartNode = false;
     public Vector3 endPos;
     public Vector3 startPos;
+    public Vector3 prevNodePos;
     void Start()
     {
         OnEnable();
@@ -40,6 +41,7 @@ public class BuildNode : MonoBehaviour
         lineRenderer.endColor = drawColour;
 
         startPos = transform.position;
+        prevNodePos = startPos;
     }
 
     private void OnDisable()
@@ -65,6 +67,7 @@ public class BuildNode : MonoBehaviour
     {
         endPos = new Vector3();
         connected = false;
+        prevNodePos = transform.position;
     }
     public void SetAsStartNode()
     {

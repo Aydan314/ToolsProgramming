@@ -109,6 +109,9 @@ public class BuildTool : MonoBehaviour
             newObject.transform.position = gridPos;
             newObject.GetComponent<BuildNode>().ConnectTo(prevNode.transform.position);
             newObject.transform.parent = this.gameObject.transform;
+
+            prevNode.GetComponent<BuildNode>().prevNodePos = gridPos;
+
             prevNode = newObject;
 
             footPrint.Add(newObject);
@@ -117,6 +120,7 @@ public class BuildTool : MonoBehaviour
         else
         {
             prevNode.GetComponent<BuildNode>().ConnectTo(footPrint[0].transform.position);
+            footPrint[0].GetComponent<BuildNode>().prevNodePos = prevNode.transform.position;
             SelectionComplete();
         }
     }
@@ -165,7 +169,7 @@ public class BuildTool : MonoBehaviour
     // Update function for the Build Tool //
     private void OnSceneGUI(SceneView sceneView)
     {
-        // Ensures the user can't toggle the build tool too quickly //
+        // Ensures the user can't input too quickly //
         if (inputCooldown > 0.0f)
         {
             inputCooldown -= Time.deltaTime;
@@ -237,9 +241,10 @@ public class BuildTool : MonoBehaviour
                         SelectionComplete();
                     }
                     // Deletes the previous node //
-                    if (e.keyCode == KeyCode.Escape)
+                    if (e.keyCode == KeyCode.Escape && inputCooldown == 0.0f)
                     {
                         RemovePreviousNode();
+                        inputCooldown = 0.5f;
                     }
                 }
             }
