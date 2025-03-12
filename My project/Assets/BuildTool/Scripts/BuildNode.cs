@@ -9,6 +9,10 @@ public class BuildNode : MonoBehaviour
     LineRenderer lineRenderer;
     Renderer renderer;
     bool connected = false;
+    public BuildNode prevNode;
+    public BuildNode nextNode;
+    public Vector3 selectionDrawPos;
+    public Vector3 nodePos;
 
     [SerializeField]
     public Color drawColour;
@@ -17,9 +21,8 @@ public class BuildNode : MonoBehaviour
     [SerializeField]
     public Color fullSelectionColour;
     public bool isStartNode = false;
-    public Vector3 endPos;
-    public Vector3 startPos;
-    public Vector3 prevNodePos;
+
+    
     void Start()
     {
         OnEnable();
@@ -32,6 +35,8 @@ public class BuildNode : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         renderer = GetComponent<Renderer>();
 
+        SetColour(drawColour);
+
         if (!lineRenderer)
         {
             Debug.LogError("!! No Line Renderer Attached !!");
@@ -40,8 +45,7 @@ public class BuildNode : MonoBehaviour
         lineRenderer.startColor = drawColour;
         lineRenderer.endColor = drawColour;
 
-        startPos = transform.position;
-        prevNodePos = startPos;
+        nodePos = gameObject.transform.position;
     }
 
     private void OnDisable()
@@ -53,21 +57,33 @@ public class BuildNode : MonoBehaviour
     {
         if (connected)
         {
-            lineRenderer.SetPosition(0, startPos);
-            lineRenderer.SetPosition(1, endPos);
+            lineRenderer.SetPosition(0, nodePos);
+            lineRenderer.SetPosition(1, nextNode.nodePos);
+        }
+        else if (this != null)
+        {
+            lineRenderer.SetPosition(0, nodePos);
+            lineRenderer.SetPosition(1, selectionDrawPos);
         }
     }
-    public void ConnectTo(Vector3 pos)
+    public void ConnectTo(BuildNode node)
     {
-        endPos = pos;
+        prevNode = node;
+        node.nextNode = this;
+        node.connected = true;
+    }
+
+    public void ConnectToStart(BuildNode startNode)
+    {
+        nextNode = startNode;
+        startNode.prevNode = this;
         connected = true;
     }
 
     public void Disconnect()
     {
-        endPos = new Vector3();
         connected = false;
-        prevNodePos = transform.position;
+        nextNode = null;
     }
     public void SetAsStartNode()
     {

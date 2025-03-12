@@ -9,17 +9,17 @@ using UnityEditor.Rendering;
 public class BuildTool : MonoBehaviour
 {
     [SerializeField]
-    GameObject node;
+    GameObject nodeObject;
     [SerializeField]
     float gridSize = 1;
 
     private Vector3 gridStart;
-    GameObject prevNode = null;
+    BuildNode prevNode = null;
     AssetPackManager assetPackManager;
 
     bool creatingGrid = false;
     bool toolActive = false;
-    List<GameObject> footPrint;
+    List<BuildNode> footPrint;
     float inputCooldown = 0.0f;
     float clickCooldown = 0.0f;
 
@@ -56,6 +56,7 @@ public class BuildTool : MonoBehaviour
     {
         foreach (var marker in footPrint)
         {
+            DestroyImmediate(marker.gameObject);
             DestroyImmediate(marker);
         }
     }
@@ -69,16 +70,24 @@ public class BuildTool : MonoBehaviour
     // Remove previous node in grid selection //
     private void RemovePreviousNode()
     {
-        GameObject deleted = footPrint[footPrint.Count - 1];
-        footPrint.Remove(deleted);
+        BuildNode deleted = footPrint[footPrint.Count - 1];
+        GameObject deletedObject = deleted.gameObject;
+        
         DestroyImmediate(deleted);
+        footPrint.Remove(deleted);
+        DestroyImmediate(deletedObject);
+        
+
         if (footPrint.Count == 0)
         {
             creatingGrid = false;
+            prevNode = null;
+            
         }
         else
         {
             prevNode = footPrint[footPrint.Count - 1];
+            prevNode.Disconnect();
         }
     }
 
@@ -86,41 +95,41 @@ public class BuildTool : MonoBehaviour
     private void BeginGridCreation(Vector3 point)
     {
         creatingGrid = true;
-        footPrint = new List<GameObject>();
+        footPrint = new List<BuildNode>();
 
-        GameObject newObject = Instantiate(node);
+        GameObject newObject = Instantiate(nodeObject);
+        BuildNode newNode = newObject.GetComponent<BuildNode>();
 
         gridStart = point;
         newObject.transform.position = gridStart;
-        newObject.GetComponent<BuildNode>().SetAsStartNode();
         newObject.transform.parent = this.gameObject.transform;
-        prevNode = newObject;
 
-        footPrint.Add(newObject);
+        newNode.SetAsStartNode();
+        footPrint.Add(newNode);
+
+        prevNode = newNode;
     }
 
     // Add a point aligned to the first point in the selection grid //
     private void AddPointToGrid(Vector3 gridPos)
     {
-        if (gridPos != footPrint[0].transform.position)
+        if (gridPos != footPrint[0].nodePos)
         {
-            GameObject newObject = Instantiate(node);
+            GameObject newObject = Instantiate(nodeObject);
+            BuildNode newNode = newObject.GetComponent<BuildNode>();
 
             newObject.transform.position = gridPos;
-            newObject.GetComponent<BuildNode>().ConnectTo(prevNode.transform.position);
             newObject.transform.parent = this.gameObject.transform;
+            
+            newNode.ConnectTo(prevNode);
+            footPrint.Add(newNode);
 
-            prevNode.GetComponent<BuildNode>().prevNodePos = gridPos;
-
-            prevNode = newObject;
-
-            footPrint.Add(newObject);
+            prevNode = newNode;
         }
         // User has finished area selection as all nodes connect //
         else
         {
-            prevNode.GetComponent<BuildNode>().ConnectTo(footPrint[0].transform.position);
-            footPrint[0].GetComponent<BuildNode>().prevNodePos = prevNode.transform.position;
+            prevNode.ConnectToStart(footPrint[0]);
             SelectionComplete();
         }
     }
@@ -183,7 +192,6 @@ public class BuildTool : MonoBehaviour
         }
         else if (clickCooldown != 0.0f) clickCooldown = 0.0f;
 
-
         Event e = Event.current;
         Vector3 gridPos = new Vector3();
 
@@ -204,32 +212,33 @@ public class BuildTool : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Vector3 prevPos = prevNode.transform.position;
+                    Vector3 prevPos = prevNode.nodePos;
 
                     gridPos = SnapPointToGrid(hit.point);
                     gridPos = SnapPointToAxis(gridPos, prevPos);
                     
-                    BuildNode node = footPrint[0].GetComponent<BuildNode>();
+                    BuildNode startNode = footPrint[0];
 
                     if (footPrint.Count > 1)
                     {
+                        Debug.Log(startNode.nodePos + "    " + gridPos + " " + (gridPos == startNode.nodePos));
                         // Detects if full loop of selection will be made upon placing node //
-                        if (gridPos == footPrint[0].transform.position)
+                        if (gridPos == startNode.nodePos)
                         {
-                            node.SetColour(node.fullSelectionColour);
-                            ApplyColourToGrid(node.fullSelectionColour);
+                            startNode.SetColour(startNode.fullSelectionColour);
+                            ApplyColourToGrid(startNode.fullSelectionColour);
 
                         }
                         // Resets node colour //
-                        else if (node.GetColour() != node.startNodeColour)
+                        else if (startNode.GetColour() != startNode.startNodeColour)
                         {
-                            node.SetColour(node.startNodeColour);
-                            ApplyColourToGrid(node.drawColour);
+                            startNode.SetColour(startNode.startNodeColour);
+                            ApplyColourToGrid(startNode.drawColour);
                         }
                     }
                 }
 
-                prevNode.GetComponent<BuildNode>().ConnectTo(gridPos);
+                prevNode.selectionDrawPos = gridPos;
 
 
                 if (e.type == EventType.KeyDown)
@@ -237,7 +246,7 @@ public class BuildTool : MonoBehaviour
                     // User can press enter to create selection even if its not full, e.g for a single wall //
                     if (e.keyCode == KeyCode.Return)
                     {
-                        prevNode.GetComponent<BuildNode>().ConnectTo(prevNode.transform.position);
+                        prevNode.ConnectTo(prevNode);
                         SelectionComplete();
                     }
                     // Deletes the previous node //
@@ -256,9 +265,11 @@ public class BuildTool : MonoBehaviour
             {
                 if (e.type == EventType.MouseDown)
                 {
+                    
                     // Places a node into the scene //
                     if (e.keyCode == KeyCode.Mouse0 && clickCooldown == 0.0f)
                     {
+                        
                         Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                         RaycastHit hit;
 

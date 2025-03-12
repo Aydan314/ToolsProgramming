@@ -4,25 +4,34 @@ using UnityEngine;
 
 public class AssetOutlineBrush : AssetBaseBrush
 {
-    public override void Build(List<GameObject> Selection, AssetBasePack assetPack)
+    public override void Build(List<BuildNode> Selection, AssetBasePack assetPack)
     {
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
 
-        for (int i = 0; i < Selection.Count; i++)
+        BuildNode buildNode = Selection[0];
+
+        int i = 0;
+       
+        while (buildNode != null)
         {
-
-            GameObject marker = Selection[i];
-            BuildNode buildNode = marker.GetComponent<BuildNode>();
-
             BuildAssetsBetween(buildNode, assetPack, root);
+            buildNode = buildNode.nextNode;
+
+            if (buildNode == Selection[0]) break;
+
+            if (i > 100) 
+            {
+                Debug.LogError("!! Max Selection Iteration Reached !!");
+                break;
+            }
+            i++;
         }
     }
     public void BuildAssetsBetween(BuildNode node, AssetBasePack assetPack, GameObject rootObject)
     {
-        Vector3 start = node.startPos;
-        Vector3 end = node.endPos;
-        Vector3 prevNodePos = node.prevNodePos;
+        Vector3 end = node.nextNode.transform.position;
+        Vector3 start = node.gameObject.transform.position;
 
         float distance = (end - start).magnitude;
 
@@ -53,7 +62,7 @@ public class AssetOutlineBrush : AssetBaseBrush
         {
             Asset asset = assetPack.assets[0];
 
-            if (prevNodePos != start)
+            if (node.prevNode != node)
             {
                 asset = assetPack.cornerAssets[0];
                

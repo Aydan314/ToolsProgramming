@@ -9,7 +9,7 @@ using UnityEngine.Rendering;
 [System.Serializable]
 public class AssetBaseBrush : MonoBehaviour
 {
-    public virtual void Build(List<GameObject> Selection, AssetBasePack assetPack)
+    public virtual void Build(List<BuildNode> Selection, AssetBasePack assetPack)
     {
         Debug.Log("Base Brush Build Called Using " + assetPack.name);
     }
