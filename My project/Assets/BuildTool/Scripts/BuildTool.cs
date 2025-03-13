@@ -22,6 +22,7 @@ public class BuildTool : MonoBehaviour
     List<BuildNode> footPrint;
     float inputCooldown = 0.0f;
     float clickCooldown = 0.0f;
+    float selectionTolerance = 0.01f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,6 +49,24 @@ public class BuildTool : MonoBehaviour
     private void OnDisable()
     {
         SceneView.duringSceneGui -= OnSceneGUI;
+    }
+
+    // Compares 2 positions with a degree of inacurracy //
+    private bool ComparePositions(Vector3 A, Vector3 B)
+    {
+        if (A.x <= B.x + selectionTolerance && A.x >= B.x - selectionTolerance)
+        {
+            if (A.y <= B.y + selectionTolerance && A.y >= B.y - selectionTolerance)
+            {
+                if (A.z <= B.z + selectionTolerance && A.z >= B.z - selectionTolerance)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        return false;
     }
 
     // Remove all nodes used for selection in world //
@@ -113,7 +132,7 @@ public class BuildTool : MonoBehaviour
     // Add a point aligned to the first point in the selection grid //
     private void AddPointToGrid(Vector3 gridPos)
     {
-        if (gridPos != footPrint[0].nodePos)
+        if (!ComparePositions(gridPos, footPrint[0].nodePos))
         {
             GameObject newObject = Instantiate(nodeObject);
             BuildNode newNode = newObject.GetComponent<BuildNode>();
@@ -221,9 +240,8 @@ public class BuildTool : MonoBehaviour
 
                     if (footPrint.Count > 1)
                     {
-                        Debug.Log(startNode.nodePos + "    " + gridPos + " " + (gridPos == startNode.nodePos));
                         // Detects if full loop of selection will be made upon placing node //
-                        if (gridPos == startNode.nodePos)
+                        if (ComparePositions(gridPos, startNode.nodePos))
                         {
                             startNode.SetColour(startNode.fullSelectionColour);
                             ApplyColourToGrid(startNode.fullSelectionColour);
@@ -246,8 +264,8 @@ public class BuildTool : MonoBehaviour
                     // User can press enter to create selection even if its not full, e.g for a single wall //
                     if (e.keyCode == KeyCode.Return)
                     {
-                        prevNode.ConnectTo(prevNode);
-                        SelectionComplete();
+                        //prevNode.ConnectToStart(prevNode);
+                        //SelectionComplete();
                     }
                     // Deletes the previous node //
                     if (e.keyCode == KeyCode.Escape && inputCooldown == 0.0f)

@@ -21,7 +21,7 @@ public class BuildNode : MonoBehaviour
     [SerializeField]
     public Color fullSelectionColour;
     public bool isStartNode = false;
-
+    public bool windingOrderAntiClockwise = true;
     
     void Start()
     {
@@ -97,5 +97,17 @@ public class BuildNode : MonoBehaviour
     public Color GetColour()
     {
         return renderer.material.color;
+    }
+
+    public BuildNode GetPrevNode()
+    {
+        if (!windingOrderAntiClockwise) return nextNode;
+        return prevNode;
+    }
+
+    public BuildNode GetNextNode()
+    {
+        if (!windingOrderAntiClockwise) return prevNode;
+        return nextNode;
     }
 }
