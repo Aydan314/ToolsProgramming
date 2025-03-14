@@ -1,4 +1,4 @@
-using NUnit.Framework;
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -22,4 +22,7 @@ public struct AssetBasePack
     public List<Asset> cornerAssets;
     [Header("Pack Brush:")]
     public AssetBaseBrush brush;
+    [Header("Spread Density")]
+    [Range(0, 1)]
+    public float spreadDensity;
 }

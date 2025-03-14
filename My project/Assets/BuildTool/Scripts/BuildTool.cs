@@ -113,6 +113,7 @@ public class BuildTool : MonoBehaviour
     // Create a new grid selection //
     private void BeginGridCreation(Vector3 point)
     {
+        gridSize = assetPackManager.GetActiveAssetPack().gridSize;
         creatingGrid = true;
         footPrint = new List<BuildNode>();
 
@@ -154,11 +155,11 @@ public class BuildTool : MonoBehaviour
     }
 
     // Loops through each node exept the start node and applys a colour //
-    private void ApplyColourToGrid(Color color)
+    private void ApplyColourToGrid(Material color)
     {
         for (int i = 1; i < footPrint.Count; i++)
         {
-            footPrint[i].GetComponent<BuildNode>().SetColour(color);
+            footPrint[i].GetComponent<BuildNode>().SetMaterial(color);
         }
     }
 
@@ -243,14 +244,14 @@ public class BuildTool : MonoBehaviour
                         // Detects if full loop of selection will be made upon placing node //
                         if (ComparePositions(gridPos, startNode.nodePos))
                         {
-                            startNode.SetColour(startNode.fullSelectionColour);
+                            startNode.SetMaterial(startNode.fullSelectionColour);
                             ApplyColourToGrid(startNode.fullSelectionColour);
 
                         }
                         // Resets node colour //
-                        else if (startNode.GetColour() != startNode.startNodeColour)
+                        else if (startNode.GetMaterial() != startNode.startNodeColour)
                         {
-                            startNode.SetColour(startNode.startNodeColour);
+                            startNode.SetMaterial(startNode.startNodeColour);
                             ApplyColourToGrid(startNode.drawColour);
                         }
                     }

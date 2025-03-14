@@ -13,15 +13,16 @@ public class BuildNode : MonoBehaviour
     public BuildNode nextNode;
     public Vector3 selectionDrawPos;
     public Vector3 nodePos;
-
-    [SerializeField]
-    public Color drawColour;
-    [SerializeField]
-    public Color startNodeColour;
-    [SerializeField]
-    public Color fullSelectionColour;
     public bool isStartNode = false;
     public bool windingOrderAntiClockwise = true;
+
+    [SerializeField]
+    public Material drawColour;
+    [SerializeField]
+    public Material startNodeColour;
+    [SerializeField]
+    public Material fullSelectionColour;
+    
     
     void Start()
     {
@@ -35,15 +36,15 @@ public class BuildNode : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         renderer = GetComponent<Renderer>();
 
-        SetColour(drawColour);
+        SetMaterial(drawColour);
 
         if (!lineRenderer)
         {
             Debug.LogError("!! No Line Renderer Attached !!");
         }
 
-        lineRenderer.startColor = drawColour;
-        lineRenderer.endColor = drawColour;
+        lineRenderer.material = drawColour;
+        
 
         nodePos = gameObject.transform.position;
     }
@@ -87,16 +88,16 @@ public class BuildNode : MonoBehaviour
     }
     public void SetAsStartNode()
     {
-        SetColour(startNodeColour);
+        SetMaterial(startNodeColour);
         isStartNode = true;
     }
-    public void SetColour(Color colour)
+    public void SetMaterial(Material colour)
     {
-        renderer.material.color = colour;
+        renderer.sharedMaterial = colour;
     }
-    public Color GetColour()
+    public Material GetMaterial()
     {
-        return renderer.material.color;
+        return renderer.sharedMaterial;
     }
 
     public BuildNode GetPrevNode()

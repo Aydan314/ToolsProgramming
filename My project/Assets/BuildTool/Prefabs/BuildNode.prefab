@@ -122,10 +122,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afcea6b703d72c54cb776b420a169ff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawColour: {r: 0, g: 1, b: 0.061501026, a: 0}
-  startNodeColour: {r: 0.9622642, g: 0.9311533, b: 0.086240634, a: 0}
-  fullSelectionColour: {r: 0.003775057, g: 0.5283019, b: 0, a: 0}
+  prevNode: {fileID: 0}
+  nextNode: {fileID: 0}
+  selectionDrawPos: {x: 0, y: 0, z: 0}
+  nodePos: {x: 0, y: 0, z: 0}
+  drawColour: {fileID: 2100000, guid: 8b636a98c599506418ab39b8e19507ac, type: 2}
+  startNodeColour: {fileID: 2100000, guid: f4f329b4f76df164fa4154e1a6174ee0, type: 2}
+  fullSelectionColour: {fileID: 2100000, guid: 2dbab8c03e07ead4da5a6c04c1475b84, type: 2}
   isStartNode: 0
+  windingOrderAntiClockwise: 1
 --- !u!120 &4140447420529656964
 LineRenderer:
   serializedVersion: 2
