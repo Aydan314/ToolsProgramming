@@ -5,19 +5,24 @@ using UnityEngine;
 
 public class AssetOutlineBrush : AssetBaseBrush
 {
-    public override void Build(List<BuildNode> Selection, AssetBasePack assetPack)
+    public override void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
     {
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
 
-        BuildNode buildNode = Selection[0];
+        BuildNodeData buildNode = Selection[0];
 
         if (DetectWindingOrderClockwise(Selection))
         {
-            foreach(BuildNode node in Selection)
+            Debug.Log("Clockwise");
+            foreach (BuildNodeData node in Selection)
             {
                 node.windingOrderAntiClockwise = false;
             }
+        }
+        else
+        {
+            Debug.Log("AntiClockwise");
         }
 
         int i = 0;
@@ -25,11 +30,11 @@ public class AssetOutlineBrush : AssetBaseBrush
         while (buildNode != null)
         {
             BuildAssetsBetween(buildNode, assetPack, root);
-            buildNode = buildNode.GetNextNode();
+            buildNode = buildNode.GetNext();
 
             if (buildNode == Selection[0]) break;
 
-            if (i > 100) 
+            if (i > 100)
             {
                 Debug.LogError("!! Max Selection Iteration Reached !!");
                 break;
@@ -38,27 +43,17 @@ public class AssetOutlineBrush : AssetBaseBrush
         }
     }
 
-    public bool DetectWindingOrderClockwise(List<BuildNode> selection)
+    public bool DetectNodeAtCorner(BuildNodeData buildNode)
     {
-        BuildNode startNode = selection[0];
-
-        Vector3 nextNodeDir = (startNode.nodePos - startNode.nextNode.nodePos).normalized;
-        Vector3 prevNodeDir = (startNode.nodePos - startNode.prevNode.nodePos).normalized;
-
-        return nextNodeDir.x != prevNodeDir.z;
-    }
-
-    public bool DetectNodeAtCorner(BuildNode buildNode)
-    {
-        Vector3 nextNodeDir = (buildNode.nodePos - buildNode.nextNode.nodePos).normalized;
-        Vector3 prevNodeDir = (buildNode.nodePos - buildNode.prevNode.nodePos).normalized;
+        Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
+        Vector3 prevNodeDir = (buildNode.position - buildNode.GetPrev().position).normalized;
 
         return nextNodeDir != (prevNodeDir * -1.0f);
     }
 
-    public float CalculateAssetRotation(BuildNode buildNode)
+    public float CalculateAssetRotation(BuildNodeData buildNode)
     {
-        Vector3 nextNodeDir = (buildNode.nodePos - buildNode.GetNextNode().nodePos).normalized;
+        Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
 
         if (nextNodeDir.z > 0) return 270.0f;
         else if (nextNodeDir.x < 0) return 180.0f;
@@ -67,10 +62,10 @@ public class AssetOutlineBrush : AssetBaseBrush
         return 0.0f;
     }
 
-    public float CalculateAssetCornerRotation(BuildNode buildNode)
+    public float CalculateAssetCornerRotation(BuildNodeData buildNode)
     {
-        Vector3 prevNodeDir = (buildNode.nodePos - buildNode.GetPrevNode().nodePos).normalized;
-        Vector3 nextNodeDir = (buildNode.nodePos - buildNode.GetNextNode().nodePos).normalized;
+        Vector3 prevNodeDir = (buildNode.position - buildNode.GetPrev().position).normalized;
+        Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
 
         // Anti clockwise winding order //
         if (prevNodeDir.x < 0 && nextNodeDir.z > 0) return 270.0f;
@@ -84,10 +79,10 @@ public class AssetOutlineBrush : AssetBaseBrush
 
         return 0.0f;
     }
-    public void BuildAssetsBetween(BuildNode node, AssetBasePack assetPack, GameObject rootObject)
+    public void BuildAssetsBetween(BuildNodeData node, AssetBasePack assetPack, GameObject rootObject)
     {
-        Vector3 end = node.GetNextNode().transform.position;
-        Vector3 start = node.gameObject.transform.position;
+        Vector3 end = node.GetNext().position;
+        Vector3 start = node.position;
 
         float distance = (end - start).magnitude;
 
@@ -100,7 +95,7 @@ public class AssetOutlineBrush : AssetBaseBrush
             Asset asset = assetPack.assets[0];
 
             // Places a corner asset if it is valid //
-            if (node.prevNode != node && DetectNodeAtCorner(node))
+            if (node.GetPrev() != node && DetectNodeAtCorner(node))
             {
                 asset = assetPack.cornerAssets[0];
                 PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
@@ -114,7 +109,7 @@ public class AssetOutlineBrush : AssetBaseBrush
         if (assetPack.assets.Count > 0)
         {
             Asset asset = assetPack.assets[0];
-            
+
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {
                 PlaceAsset(asset.assetObject, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);

@@ -76,13 +76,31 @@ public class BuildTool : MonoBehaviour
         foreach (var marker in footPrint)
         {
             DestroyImmediate(marker.gameObject);
-            DestroyImmediate(marker);
+  
+            
         }
     }
     private void SelectionComplete()
     {
-        assetPackManager.Build(footPrint);
-        DestroySelectionNodes();
+        if (assetPackManager.GetActiveAssetPack().gridSize != 0)
+        {
+            List<BuildNodeData> footprintData = new List<BuildNodeData>();
+
+            foreach (BuildNode node in footPrint)
+            {
+                footprintData.Add(node.GetNodeData());
+            }
+
+            assetPackManager.Build(footprintData);
+
+            DestroySelectionNodes();
+        }
+        else
+        {
+            Debug.LogError("Grid size cannot be 0!");
+            DestroySelectionNodes();
+        }
+        
         creatingGrid = false;
     }
 
@@ -133,14 +151,15 @@ public class BuildTool : MonoBehaviour
     // Add a point aligned to the first point in the selection grid //
     private void AddPointToGrid(Vector3 gridPos)
     {
-        if (!ComparePositions(gridPos, footPrint[0].nodePos))
+        if (!ComparePositions(gridPos, footPrint[0].GetNodeData().position))
         {
             GameObject newObject = Instantiate(nodeObject);
-            BuildNode newNode = newObject.GetComponent<BuildNode>();
-
+            
             newObject.transform.position = gridPos;
             newObject.transform.parent = this.gameObject.transform;
-            
+
+            BuildNode newNode = newObject.GetComponent<BuildNode>();
+
             newNode.ConnectTo(prevNode);
             footPrint.Add(newNode);
 
@@ -232,7 +251,7 @@ public class BuildTool : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Vector3 prevPos = prevNode.nodePos;
+                    Vector3 prevPos = prevNode.GetNodeData().position;
 
                     gridPos = SnapPointToGrid(hit.point);
                     gridPos = SnapPointToAxis(gridPos, prevPos);
@@ -242,7 +261,7 @@ public class BuildTool : MonoBehaviour
                     if (footPrint.Count > 1)
                     {
                         // Detects if full loop of selection will be made upon placing node //
-                        if (ComparePositions(gridPos, startNode.nodePos))
+                        if (ComparePositions(gridPos, startNode.GetNodeData().position))
                         {
                             startNode.SetMaterial(startNode.fullSelectionColour);
                             ApplyColourToGrid(startNode.fullSelectionColour);

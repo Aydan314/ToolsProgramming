@@ -21,7 +21,7 @@ public class AssetPackManager : MonoBehaviour
         return assetBasePacks[0];
     }
 
-    public void Build(List<BuildNode> footPrint)
+    public void Build(List<BuildNodeData> footPrint)
     {
         GetActiveAssetPack().brush.Build(footPrint, GetActiveAssetPack());
     }

@@ -3,18 +3,40 @@ using TreeEditor;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+
+public class BuildNodeData
+{
+    public BuildNodeData prev;
+    public Vector3 position;
+    public BuildNodeData next;
+    public bool windingOrderAntiClockwise = true;
+
+    public BuildNodeData GetPrev()
+    {
+        if (windingOrderAntiClockwise) return prev;
+        else return next;
+    } 
+
+    public BuildNodeData GetNext()
+    {
+        if (windingOrderAntiClockwise) return next;
+        else return prev;
+    }
+
+}
+
 [ExecuteInEditMode]
 public class BuildNode : MonoBehaviour
 {
     LineRenderer lineRenderer;
     Renderer renderer;
     bool connected = false;
-    public BuildNode prevNode;
-    public BuildNode nextNode;
+
+    public BuildNodeData nodeData;
     public Vector3 selectionDrawPos;
-    public Vector3 nodePos;
+
     public bool isStartNode = false;
-    public bool windingOrderAntiClockwise = true;
+    
 
     [SerializeField]
     public Material drawColour;
@@ -44,9 +66,8 @@ public class BuildNode : MonoBehaviour
         }
 
         lineRenderer.material = drawColour;
-        
 
-        nodePos = gameObject.transform.position;
+        
     }
 
     private void OnDisable()
@@ -58,33 +79,39 @@ public class BuildNode : MonoBehaviour
     {
         if (connected)
         {
-            lineRenderer.SetPosition(0, nodePos);
-            lineRenderer.SetPosition(1, nextNode.nodePos);
+            lineRenderer.SetPosition(0, GetNodeData().position);
+            lineRenderer.SetPosition(1, nodeData.next.position);
         }
         else if (this != null)
         {
-            lineRenderer.SetPosition(0, nodePos);
+            lineRenderer.SetPosition(0, GetNodeData().position);
             lineRenderer.SetPosition(1, selectionDrawPos);
         }
     }
     public void ConnectTo(BuildNode node)
     {
-        prevNode = node;
-        node.nextNode = this;
+        
+        node.nodeData.next = GetNodeData();
+        nodeData.prev = node.GetNodeData();
         node.connected = true;
+
+        nodeData.position = gameObject.transform.position;
     }
 
     public void ConnectToStart(BuildNode startNode)
     {
-        nextNode = startNode;
-        startNode.prevNode = this;
+        startNode.nodeData.prev = GetNodeData();
+        nodeData.next = startNode.GetNodeData();
+        
         connected = true;
+
+        nodeData.position = gameObject.transform.position;
     }
 
     public void Disconnect()
     {
         connected = false;
-        nextNode = null;
+        nodeData.next = null;
     }
     public void SetAsStartNode()
     {
@@ -100,15 +127,17 @@ public class BuildNode : MonoBehaviour
         return renderer.sharedMaterial;
     }
 
-    public BuildNode GetPrevNode()
+    public BuildNodeData GetNodeData()
     {
-        if (!windingOrderAntiClockwise) return nextNode;
-        return prevNode;
-    }
+        if (nodeData == null)
+        {
+            nodeData = new BuildNodeData();
 
-    public BuildNode GetNextNode()
-    {
-        if (!windingOrderAntiClockwise) return prevNode;
-        return nextNode;
+            nodeData.position = gameObject.transform.position;
+            nodeData.next = null;
+            nodeData.prev = null;
+        }
+
+        return nodeData;
     }
 }
