@@ -9,20 +9,31 @@ public class BuildNodeData
     public BuildNodeData prev;
     public Vector3 position;
     public BuildNodeData next;
-    public bool windingOrderAntiClockwise = true;
+    public bool windingOrderClockwise = false;
 
     public BuildNodeData GetPrev()
     {
-        if (windingOrderAntiClockwise) return prev;
+        if (windingOrderClockwise) return prev;
         else return next;
     } 
 
     public BuildNodeData GetNext()
     {
-        if (windingOrderAntiClockwise) return next;
+        if (windingOrderClockwise) return next;
         else return prev;
     }
 
+    public void SetNext(BuildNodeData nextNode)
+    {
+        if (windingOrderClockwise) next = nextNode;
+        else prev = nextNode;
+    }
+
+    public void SetPrev(BuildNodeData prevNode)
+    {
+        if (windingOrderClockwise) prev = prevNode;
+        else next = prevNode;
+    }
 }
 
 [ExecuteInEditMode]

@@ -17,7 +17,7 @@ public class AssetOutlineBrush : AssetBaseBrush
             Debug.Log("Clockwise");
             foreach (BuildNodeData node in Selection)
             {
-                node.windingOrderAntiClockwise = false;
+                node.windingOrderClockwise = false;
             }
         }
         else

@@ -28,7 +28,7 @@ public class AssetSpreadBrush : AssetBaseBrush
             Debug.Log("Clockwise");
             foreach (BuildNodeData node in Selection)
             {
-                node.windingOrderAntiClockwise = false;
+                node.windingOrderClockwise = true;
             }
         }
         else
@@ -58,18 +58,31 @@ public class AssetSpreadBrush : AssetBaseBrush
 
     public bool CompletesCycle(List<BuildNodeData> nodes)
     {
-        foreach (BuildNodeData node in nodes)
-        {
-            Vector3 nextNodeDir = GetNextNodeDir(node);
 
-            foreach(BuildNodeData checkNode in nodes)
+        List<Vector3> clockwiseDir = new List<Vector3>() { new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(-1, 0, 0), new Vector3(0, 0, 1) };
+
+        int cycleStartPos = -1;
+        int i = 0;
+
+        Vector3 firstDir = GetNextNodeDir(nodes[0]);
+
+        foreach (Vector3 dir in clockwiseDir)
+        {
+            if (dir == firstDir)
             {
-                if (checkNode != node)
-                {
-                    Debug.Log(nextNodeDir + " " + GetNextNodeDir(checkNode));
-                    if (nextNodeDir == GetNextNodeDir(checkNode)) return false;
-                }
+                cycleStartPos = i;
+                break;
             }
+            i++;
+        }
+
+        if (cycleStartPos == -1) return false;
+
+        for (int j = 0; j < 3; j++)
+        {
+            int listPos = (cycleStartPos + j) % clockwiseDir.Count;
+
+            if (clockwiseDir[listPos] != GetNextNodeDir(nodes[j])) return false;
         }
 
         return true;
@@ -79,12 +92,12 @@ public class AssetSpreadBrush : AssetBaseBrush
     {
         foreach (BuildNodeData node in nodes)
         {
-            if (node.next != null)
+            if (node.GetNext() != null)
             {
                 Vector3 nodePos = node.position;
-                Vector3 nextNodePos = node.next.position;
+                Vector3 nextNodePos = node.GetNext().position;
 
-                Debug.Log("checking if position " + point + " is between" + nodePos + " and " + nextNodePos);
+                //Debug.Log("checking if position " + point + " is between" + nodePos + " and " + nextNodePos);
 
                 if (point.x == nodePos.x && point.x == nextNodePos.x)
                 {
@@ -100,11 +113,6 @@ public class AssetSpreadBrush : AssetBaseBrush
         return false;
     }
 
-    public Vector3 GetNextNodeDir(BuildNodeData node)
-    {
-        return (node.position - node.next.position).normalized;
-    }
-
     public Vector3 GenerateNewPoint(List<BuildNodeData> nodes)
     {
         Vector3 A = nodes[1].position;
@@ -112,7 +120,7 @@ public class AssetSpreadBrush : AssetBaseBrush
         Vector3 C = nodes[0].position;
 
 
-        Debug.Log("creating point from " + A + " " + B + " " + C + " == " + (A + (B - A) + (C - A)));
+        //Debug.Log("creating point from " + A + " " + B + " " + C + " == " + (A + (B - A) + (C - A)));
 
         return A + (B - A) + (C - A);
     }
@@ -137,7 +145,7 @@ public class AssetSpreadBrush : AssetBaseBrush
             yMin = Mathf.Min(yMin, point.z);
         }
 
-        Debug.Log("Min max :" + xMin + " " + yMin + "        " + xMax + " " + yMax);
+        //Debug.Log("Min max :" + xMin + " " + yMin + "        " + xMax + " " + yMax);
 
         rect.xMin = xMin;
         rect.xMax = xMax;
@@ -157,6 +165,8 @@ public class AssetSpreadBrush : AssetBaseBrush
     }
     public List<Rect> ConvertSelectionToRects(List<BuildNodeData> Selection)
     {
+        bool windingOrder = Selection[0].windingOrderClockwise;
+
         List<Rect> footprintShape = new List<Rect>();
 
         List<BuildNodeData> rectPointsList = new List<BuildNodeData>() { Selection[0] };
@@ -166,7 +176,7 @@ public class AssetSpreadBrush : AssetBaseBrush
 
         while (current != null && Selection.Count > 0) 
         {
-            Debug.Log(i + " current: " + current.position);
+            //Debug.Log(i + " current: " + current.position);
 
             if (i >= 100)
             {
@@ -177,15 +187,15 @@ public class AssetSpreadBrush : AssetBaseBrush
 
             if (rectPointsList.Count == 3)
             {
-                Debug.Log(i + "Attempting to create rectangle");
+                //Debug.Log(i + "Attempting to create rectangle");
                 if (CompletesCycle(rectPointsList))
                 {
-                    Debug.Log(i + " cycle completes!");
+                    //Debug.Log(i + " cycle completes!");
                     Vector3 newPoint = GenerateNewPoint(rectPointsList);
 
                     if (PointLiesOnAnyLine(Selection,newPoint))
                     {
-                        Debug.Log(i + " point lies on line");
+                        //Debug.Log(i + " point lies on line");
                         Rect rect = GenerateRectFromPoints(new List<Vector3>()
                             {
                                 rectPointsList[0].position,
@@ -197,26 +207,31 @@ public class AssetSpreadBrush : AssetBaseBrush
 
                         footprintShape.Add(rect);
 
-                        Debug.Log("created new rect " + rect);
+                        //Debug.Log("created new rect " + rect);
 
                         DeleteNodesInvolved(rectPointsList, Selection);
 
                         BuildNodeData newNode = new BuildNodeData();
 
                         newNode.position = newPoint;
-                        newNode.prev = rectPointsList[0].prev;
-                        newNode.next = rectPointsList[2].next;
 
-                        Debug.Log(newNode.position + "<<<<<<<<<<<");
+                        newNode.windingOrderClockwise = windingOrder;
+
+                        newNode.SetPrev(rectPointsList[0].GetPrev());
+                        newNode.SetNext(rectPointsList[2].GetNext());
+
+                        
+
+                        //Debug.Log(newNode.position + "<<<<<<<<<<<");
 
                         BuildNodeData result = Selection.Find(x => x.position == newPoint);
                         if (result != null)
                         {
-                            rectPointsList[0].prev.next = result.next;
-                            rectPointsList[2].next.prev = result.next;
+                            rectPointsList[0].GetPrev().SetNext(result.GetNext());
+                            rectPointsList[2].GetNext().SetPrev(result.GetNext());
 
                             rectPointsList.Clear();
-                            rectPointsList.Add(result.next);
+                            rectPointsList.Add(result.GetNext());
 
                             Selection.Remove(result);
 
@@ -224,8 +239,8 @@ public class AssetSpreadBrush : AssetBaseBrush
                         }
                         else
                         {
-                            rectPointsList[0].prev.next = newNode;
-                            rectPointsList[2].next.prev = newNode;
+                            rectPointsList[0].GetPrev().SetNext(newNode);
+                            rectPointsList[2].GetNext().SetPrev(newNode);
 
                             rectPointsList.Clear();
                             rectPointsList.Add(newNode);
@@ -249,7 +264,7 @@ public class AssetSpreadBrush : AssetBaseBrush
                 }
             }
 
-            current = current.next;
+            current = current.GetNext();
 
             rectPointsList.Add(current);
         }

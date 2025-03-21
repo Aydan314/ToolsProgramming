@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor.VersionControl;
 using Unity.VisualScripting;
 using UnityEngine.Rendering;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 [System.Serializable]
 public class AssetBaseBrush : MonoBehaviour
@@ -21,16 +22,48 @@ public class AssetBaseBrush : MonoBehaviour
         newObject.transform.rotation = Quaternion.Euler(0, angle, 0);
         newObject.transform.parent = rootObject.transform;
     }
-
     public bool DetectWindingOrderClockwise(List<BuildNodeData> selection)
     {
-        BuildNodeData startNode = selection[0];
+        List<Vector3> clockwiseDir = new List<Vector3>() { new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(-1, 0, 0), new Vector3(0, 0, 1) };
+        List<Vector3> antiClockwiseDir = new List<Vector3>() { new Vector3(-1, 0, 0), new Vector3(0, 0, -1), new Vector3(1, 0, 0), new Vector3(0, 0, 1) };
+        Vector3 startDir = GetNextNodeDir(selection[0]);
 
-        Vector3 nextNodeDir = (startNode.position - startNode.next.position).normalized;
-        Vector3 prevNodeDir = (startNode.position - startNode.prev.position).normalized;
+        int clockwiseStartPos = -1;
+        for (int i = 0; i < clockwiseDir.Count; i++)
+        {
+            if (startDir == clockwiseDir[i])
+            {
+                clockwiseStartPos = i;
+                break;
+            }
+        }
 
-        Debug.Log(nextNodeDir + " " + prevNodeDir);
+        int antiClockwiseStartPos = -1;
+        for (int i = 0; i < antiClockwiseDir.Count; i++)
+        {
+            if (startDir == antiClockwiseDir[i])
+            {
+                antiClockwiseStartPos = i;
+                break;
+            }
+        }
 
-        return nextNodeDir.x != prevNodeDir.z;
+        int clockwiseCount = 0;
+        int antiClockwiseCount = 0;
+
+        foreach (BuildNodeData node in selection)
+        {
+            Vector3 nextNodeDir = GetNextNodeDir(node);
+            if (nextNodeDir == clockwiseDir[(clockwiseStartPos + clockwiseCount) % clockwiseDir.Count]) clockwiseCount++;
+            if (nextNodeDir == antiClockwiseDir[(antiClockwiseStartPos + antiClockwiseCount) % antiClockwiseDir.Count]) antiClockwiseCount++;
+        }
+        Debug.Log(clockwiseCount);
+
+        return clockwiseCount > antiClockwiseCount;
+    }
+
+    public Vector3 GetNextNodeDir(BuildNodeData node)
+    {
+        return (node.position - node.GetNext().position).normalized;
     }
 }
