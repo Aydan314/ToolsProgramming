@@ -11,20 +11,8 @@ public class AssetOutlineBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
 
         BuildNodeData buildNode = Selection[0];
-
-        if (DetectWindingOrderClockwise(Selection))
-        {
-            Debug.Log("Clockwise");
-            foreach (BuildNodeData node in Selection)
-            {
-                node.windingOrderClockwise = false;
-            }
-        }
-        else
-        {
-            Debug.Log("AntiClockwise");
-        }
-
+        Selection = ForceWindingOrderClockwise(Selection);
+        
         int i = 0;
 
         while (buildNode != null)

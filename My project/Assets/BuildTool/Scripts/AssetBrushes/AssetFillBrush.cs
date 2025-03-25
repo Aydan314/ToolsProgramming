@@ -1,7 +1,13 @@
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.VersionControl;
 using UnityEngine;
+using static UnityEditor.Rendering.InspectorCurveEditor;
 
-public class AssetSpreadBrush : AssetBaseBrush
+public class AssetFillBrush : AssetBaseBrush
 {
     public override void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
     {
@@ -25,14 +31,13 @@ public class AssetSpreadBrush : AssetBaseBrush
             {
                 for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
                 {
-                    if ((Random.Range(0, 100) / 100.0f) < assetPack.spreadDensity)
-                    {
-                        PlaceAsset(asset.assetObject, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
-                    }
+                    PlaceAsset(asset.assetObject, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
                 }
             }
             i++;
         }
 
     }
+
+    
 }
