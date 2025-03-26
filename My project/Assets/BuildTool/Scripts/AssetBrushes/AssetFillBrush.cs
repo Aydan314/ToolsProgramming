@@ -13,6 +13,7 @@ public class AssetFillBrush : AssetBaseBrush
     {
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
+        root.transform.position = Selection[0].position;
 
         Asset asset = assetPack.assets[0];
         BuildNodeData startNode = Selection[0];
@@ -24,9 +25,7 @@ public class AssetFillBrush : AssetBaseBrush
         int i = 0;
         foreach (Rect rect in footprintShape)
         {
-            Debug.Log(rect);
-
-
+            
             for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
             {
                 for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)

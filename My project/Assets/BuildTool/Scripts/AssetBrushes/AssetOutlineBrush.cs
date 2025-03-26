@@ -9,6 +9,7 @@ public class AssetOutlineBrush : AssetBaseBrush
     {
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
+        root.transform.position = Selection[0].position;
 
         BuildNodeData buildNode = Selection[0];
         Selection = ForceWindingOrderClockwise(Selection);

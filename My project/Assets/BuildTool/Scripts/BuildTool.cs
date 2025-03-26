@@ -10,10 +10,10 @@ public class BuildTool : MonoBehaviour
 {
     [SerializeField]
     GameObject nodeObject;
-    [SerializeField]
-    float gridSize = 1;
+    
 
     private Vector3 gridStart;
+    float gridSize = 1;
     BuildNode prevNode = null;
     AssetPackManager assetPackManager;
 
