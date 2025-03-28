@@ -4,7 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 
 [System.Serializable]
-public struct Asset
+public struct SpawnableData
 {
     public float defaultRotation;
     public GameObject assetObject;
@@ -13,13 +13,12 @@ public struct Asset
 [System.Serializable]
 public struct AssetBasePack
 {
-    
     public string name;
     [Tooltip("Size in Metres of the grid the assets in the pack should snap to")]
     public float gridSize;
     [Header("Pack Assets:")]
-    public List<Asset> assets;
-    public List<Asset> cornerAssets;
+    public List<SpawnableData> assets;
+    public List<SpawnableData> cornerAssets;
     [Header("Pack Brush:")]
     public AssetBaseBrush brush;
     [Header("Spread Density")]

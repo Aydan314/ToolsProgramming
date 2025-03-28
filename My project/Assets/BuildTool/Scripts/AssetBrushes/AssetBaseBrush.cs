@@ -17,6 +17,7 @@ public class AssetBaseBrush : MonoBehaviour
 
     public void PlaceAsset(GameObject asset, GameObject rootObject, Vector3 position, float angle)
     {
+        // Add new gameobject to world and set its parent //
         GameObject newObject = Instantiate(asset);
         newObject.transform.position = position;
         newObject.transform.rotation = Quaternion.Euler(0, angle, 0);
@@ -24,10 +25,13 @@ public class AssetBaseBrush : MonoBehaviour
     }
     public List<BuildNodeData> ForceWindingOrderClockwise(List<BuildNodeData> selection)
     {
+        // List of directions in a square //
+
         List<Vector3> clockwiseDir = new List<Vector3>() { new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(-1, 0, 0), new Vector3(0, 0, 1) };
         List<Vector3> antiClockwiseDir = new List<Vector3>() { new Vector3(-1, 0, 0), new Vector3(0, 0, -1), new Vector3(1, 0, 0), new Vector3(0, 0, 1) };
         Vector3 startDir = GetNextNodeDir(selection[0]);
 
+        // Detects which position in the clockwise loop the shape begins //
         int clockwiseStartPos = -1;
         for (int i = 0; i < clockwiseDir.Count; i++)
         {
@@ -38,6 +42,7 @@ public class AssetBaseBrush : MonoBehaviour
             }
         }
 
+        // Detects which position in the anticlockwise loop the shape begins //
         int antiClockwiseStartPos = -1;
         for (int i = 0; i < antiClockwiseDir.Count; i++)
         {
@@ -51,6 +56,7 @@ public class AssetBaseBrush : MonoBehaviour
         int clockwiseCount = 0;
         int antiClockwiseCount = 0;
 
+        // Iterates through the shape and records the amount of anticlockwise and clockwise directions followed //
         foreach (BuildNodeData node in selection)
         {
             Vector3 nextNodeDir = GetNextNodeDir(node);
@@ -58,6 +64,7 @@ public class AssetBaseBrush : MonoBehaviour
             if (nextNodeDir == antiClockwiseDir[(antiClockwiseStartPos + antiClockwiseCount) % antiClockwiseDir.Count]) antiClockwiseCount++;
         }
        
+        // If the shape follows more clockwise directions reverse winding direction //
         if (clockwiseCount > antiClockwiseCount)
         {
             foreach (BuildNodeData node in selection)
@@ -76,7 +83,7 @@ public class AssetBaseBrush : MonoBehaviour
 
     public bool CompletesCycle(List<BuildNodeData> nodes)
     {
-
+        // List of clockwise directions in a square //
         List<Vector3> clockwiseDir = new List<Vector3>() { new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(-1, 0, 0), new Vector3(0, 0, 1) };
 
         int cycleStartPos = -1;
@@ -84,6 +91,7 @@ public class AssetBaseBrush : MonoBehaviour
 
         Vector3 firstDir = GetNextNodeDir(nodes[0]);
 
+        // Find where in the winding order the shape starts //
         foreach (Vector3 dir in clockwiseDir)
         {
             if (dir == firstDir)
@@ -98,6 +106,7 @@ public class AssetBaseBrush : MonoBehaviour
 
         bool cycleFound = true;
 
+        // Detect if all 4 next node directions match the list starting at any direction //
         for (int j = 0; j < 3; j++)
         {
             int listPos = (cycleStartPos + j) % clockwiseDir.Count;
@@ -109,6 +118,7 @@ public class AssetBaseBrush : MonoBehaviour
             }
         }
 
+        
         if (!cycleFound)
         {
             cycleStartPos = -1;
@@ -116,6 +126,7 @@ public class AssetBaseBrush : MonoBehaviour
 
             firstDir = GetNextNodeDir(nodes[0].prev);
 
+            // Find prev node direction start in list //
             foreach (Vector3 dir in clockwiseDir)
             {
                 if (dir == firstDir)
@@ -130,6 +141,7 @@ public class AssetBaseBrush : MonoBehaviour
 
             cycleFound = true;
 
+            // Detect if all 4 prev node directions match the list //
             for (int j = 0; j < 3; j++)
             {
                 int listPos = (cycleStartPos + j) % clockwiseDir.Count;
@@ -149,6 +161,7 @@ public class AssetBaseBrush : MonoBehaviour
     {
         foreach (BuildNodeData node in nodes)
         {
+            // Iterate throgh shape to see if given points axis matches and is between itself and its next node //
             if (node.GetNext() != null)
             {
                 Vector3 nodePos = node.position;
@@ -170,6 +183,7 @@ public class AssetBaseBrush : MonoBehaviour
 
     public Vector3 GenerateNewPoint(List<BuildNodeData> nodes)
     {
+        // Given 3 points generate the 4th point that would complete the square //
         Vector3 A = nodes[1].position;
         Vector3 B = nodes[2].position;
         Vector3 C = nodes[0].position;
@@ -179,6 +193,7 @@ public class AssetBaseBrush : MonoBehaviour
 
     public Rect GenerateRectFromPoints(List<Vector3> points)
     {
+        // Find min amd max bounds from list for rect and create //
         Rect rect = new Rect();
 
         float xMin = float.MaxValue;
@@ -196,6 +211,7 @@ public class AssetBaseBrush : MonoBehaviour
             yMax = Mathf.Max(yMax, point.z);
             yMin = Mathf.Min(yMin, point.z);
         }
+
 
         rect.xMin = xMin;
         rect.xMax = xMax;
@@ -224,8 +240,10 @@ public class AssetBaseBrush : MonoBehaviour
         BuildNodeData current = Selection[0];
         int i = 0;
 
+        // Loop through shape until its empty //
         while (current != null && Selection.Count > 0)
         {
+            // Prevent algorithm from running too long //
             if (i >= 100)
             {
                 Debug.LogError("!! Shape Selection is Too Complex !!");
@@ -233,12 +251,15 @@ public class AssetBaseBrush : MonoBehaviour
             }
             i++;
 
+            // Once 3 nodes have been exploded attempt to cut out a rect from the shape //
             if (rectPointsList.Count == 3)
             {
+                // If the 3 nodes have the correct winding order, so arent on the outside //
                 if (CompletesCycle(rectPointsList))
                 {
                     Vector3 newPoint = GenerateNewPoint(rectPointsList);
 
+                    // If the created rect will fit inside the shape //
                     if (PointLiesOnAnyLine(Selection, newPoint))
                     {
                         Rect rect = GenerateRectFromPoints(new List<Vector3>()
@@ -249,9 +270,10 @@ public class AssetBaseBrush : MonoBehaviour
                                 newPoint
                             }
                         );
-
+                        // Divide out the new shape //
                         footprintShape.Add(rect);
-
+                        
+                        // remove points used to divide out rect //
                         DeleteNodesInvolved(rectPointsList, Selection);
 
                         BuildNodeData newNode = new BuildNodeData();
@@ -263,9 +285,12 @@ public class AssetBaseBrush : MonoBehaviour
                         newNode.SetPrev(rectPointsList[0].GetPrev());
                         newNode.SetNext(rectPointsList[2].GetNext());
 
+                        // Add new point to the shape mesh and reconnect the points back up //
+
                         BuildNodeData result = Selection.Find(x => x.position == newPoint);
                         if (result != null)
                         {
+                            // If the new point is an already existing point in the shape, remove it as it isnt needed //
                             rectPointsList[0].GetPrev().SetNext(result.GetNext());
                             rectPointsList[2].GetNext().SetPrev(result.GetNext());
 
@@ -278,6 +303,7 @@ public class AssetBaseBrush : MonoBehaviour
                         }
                         else
                         {
+                            // Otherwise add the new point to the mesh //
                             rectPointsList[0].GetPrev().SetNext(newNode);
                             rectPointsList[2].GetNext().SetPrev(newNode);
 
@@ -292,20 +318,21 @@ public class AssetBaseBrush : MonoBehaviour
                     }
                     else
                     {
+                        // Reset the explored nodes //
                         current = rectPointsList[0];
                         rectPointsList.Clear();
-
 
                     }
                 }
                 else
                 {
+                    // Reset the explored nodes //
                     current = rectPointsList[0];
                     rectPointsList.Clear();
-
                 }
             }
 
+            // Add current node to explored list //
             current = current.GetNext();
 
             rectPointsList.Add(current);

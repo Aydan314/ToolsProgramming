@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.VersionControl;
 using UnityEngine;
@@ -7,6 +8,13 @@ public class AssetOutlineBrush : AssetBaseBrush
 {
     public override void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
     {
+        var e = AssetDatabase.FindAssets("t:TestSO");
+        
+        var asset = AssetDatabase.LoadAssetAtPath<TestSO>(e[0]);
+
+
+        var image = AssetPreview.GetAssetPreview(asset);
+
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
@@ -16,6 +24,7 @@ public class AssetOutlineBrush : AssetBaseBrush
         
         int i = 0;
 
+        // Loop through shapes nodes and connect points up with placed assets //
         while (buildNode != null)
         {
             BuildAssetsBetween(buildNode, assetPack, root);
@@ -34,6 +43,7 @@ public class AssetOutlineBrush : AssetBaseBrush
 
     public bool DetectNodeAtCorner(BuildNodeData buildNode)
     {
+        // Detect if directions are perpendicular //
         Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
         Vector3 prevNodeDir = (buildNode.position - buildNode.GetPrev().position).normalized;
 
@@ -43,6 +53,8 @@ public class AssetOutlineBrush : AssetBaseBrush
     public float CalculateAssetRotation(BuildNodeData buildNode)
     {
         Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
+
+        // Give asset correct rotation based on previous node direction //
 
         if (nextNodeDir.z > 0) return 270.0f;
         else if (nextNodeDir.x < 0) return 180.0f;
@@ -81,7 +93,7 @@ public class AssetOutlineBrush : AssetBaseBrush
 
         if (assetPack.cornerAssets.Count > 0)
         {
-            Asset asset = assetPack.assets[0];
+            SpawnableData asset = assetPack.assets[0];
 
             // Places a corner asset if it is valid //
             if (node.GetPrev() != node && DetectNodeAtCorner(node))
@@ -97,7 +109,7 @@ public class AssetOutlineBrush : AssetBaseBrush
         }
         if (assetPack.assets.Count > 0)
         {
-            Asset asset = assetPack.assets[0];
+            SpawnableData asset = assetPack.assets[0];
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {

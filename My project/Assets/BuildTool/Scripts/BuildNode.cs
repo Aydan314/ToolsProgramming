@@ -13,24 +13,28 @@ public class BuildNodeData
 
     public BuildNodeData GetPrev()
     {
+        // return previous node depending on order //
         if (windingOrderClockwise) return prev;
         else return next;
     } 
 
     public BuildNodeData GetNext()
     {
+        // return next node depending on order //
         if (windingOrderClockwise) return next;
         else return prev;
     }
 
     public void SetNext(BuildNodeData nextNode)
     {
+        // Set next node depending on order //
         if (windingOrderClockwise) next = nextNode;
         else prev = nextNode;
     }
 
     public void SetPrev(BuildNodeData prevNode)
     {
+        // Set previous node depending on order //
         if (windingOrderClockwise) prev = prevNode;
         else next = prevNode;
     }
@@ -64,6 +68,8 @@ public class BuildNode : MonoBehaviour
 
     private void OnEnable()
     {
+        // Init values //
+
         SceneView.duringSceneGui += OnSceneGUI;
 
         lineRenderer = GetComponent<LineRenderer>();
@@ -88,6 +94,7 @@ public class BuildNode : MonoBehaviour
     }
     private void OnSceneGUI(SceneView sceneView)
     {
+        // Draw connection lines between nodes //
         if (connected)
         {
             lineRenderer.SetPosition(0, GetNodeData().position);
@@ -101,7 +108,7 @@ public class BuildNode : MonoBehaviour
     }
     public void ConnectTo(BuildNode node)
     {
-        
+        // Update connection values //
         node.nodeData.next = GetNodeData();
         nodeData.prev = node.GetNodeData();
         node.connected = true;
@@ -111,6 +118,7 @@ public class BuildNode : MonoBehaviour
 
     public void ConnectToStart(BuildNode startNode)
     {
+        // Update connection values to start //
         startNode.nodeData.prev = GetNodeData();
         nodeData.next = startNode.GetNodeData();
         
@@ -140,6 +148,7 @@ public class BuildNode : MonoBehaviour
 
     public BuildNodeData GetNodeData()
     {
+        // Return build node's data unless it has none, then create data //
         if (nodeData == null)
         {
             nodeData = new BuildNodeData();

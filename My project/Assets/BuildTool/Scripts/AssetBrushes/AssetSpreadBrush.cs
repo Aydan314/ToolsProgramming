@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class AssetSpreadBrush : AssetBaseBrush
@@ -9,13 +9,14 @@ public class AssetSpreadBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        Asset asset = assetPack.assets[0];
+        SpawnableData asset = assetPack.assets[0];
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);
 
         List<Rect> footprintShape = ConvertSelectionToRects(Selection);
 
+        // Iterate through each extracted rect and apply a chance to fill that cell //
         int i = 0;
         foreach (Rect rect in footprintShape)
         {
@@ -34,4 +35,5 @@ public class AssetSpreadBrush : AssetBaseBrush
         }
 
     }
+  
 }

@@ -15,7 +15,7 @@ public class AssetFillBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        Asset asset = assetPack.assets[0];
+        SpawnableData asset = assetPack.assets[0];
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);
@@ -23,6 +23,7 @@ public class AssetFillBrush : AssetBaseBrush
         List<Rect> footprintShape = ConvertSelectionToRects(Selection);
 
         int i = 0;
+        // Iterate through each extracted rect and fill //
         foreach (Rect rect in footprintShape)
         {
             
