@@ -6,15 +6,8 @@ using UnityEngine;
 
 public class AssetOutlineBrush : AssetBaseBrush
 {
-    public override void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
+    public override void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
     {
-        var e = AssetDatabase.FindAssets("t:TestSO");
-        
-        var asset = AssetDatabase.LoadAssetAtPath<TestSO>(e[0]);
-
-
-        var image = AssetPreview.GetAssetPreview(asset);
-
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
@@ -80,7 +73,7 @@ public class AssetOutlineBrush : AssetBaseBrush
 
         return 0.0f;
     }
-    public void BuildAssetsBetween(BuildNodeData node, AssetBasePack assetPack, GameObject rootObject)
+    public void BuildAssetsBetween(BuildNodeData node, SpawnableObjectPack assetPack, GameObject rootObject)
     {
         Vector3 end = node.GetNext().position;
         Vector3 start = node.position;
@@ -91,29 +84,29 @@ public class AssetOutlineBrush : AssetBaseBrush
 
         Vector3 step = (end - start) / distance;
 
-        if (assetPack.cornerAssets.Count > 0)
-        {
-            SpawnableData asset = assetPack.assets[0];
+        //if (assetPack.cornerAssets.Count > 0)
+        //{
+        //    SpawnableData asset = assetPack.spawnableObjects[0];
 
-            // Places a corner asset if it is valid //
-            if (node.GetPrev() != node && DetectNodeAtCorner(node))
-            {
-                asset = assetPack.cornerAssets[0];
-                PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
-            }
-            // Otherwise places a default asset //
-            else
-            {
-                PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
-            }
-        }
-        if (assetPack.assets.Count > 0)
+        //    // Places a corner asset if it is valid //
+        //    if (node.GetPrev() != node && DetectNodeAtCorner(node))
+        //    {
+        //        asset = assetPack.cornerAssets[0];
+        //        PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
+        //    }
+        //    // Otherwise places a default asset //
+        //    else
+        //    {
+        //        PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
+        //    }
+        //}
+        if (assetPack.spawnableObjects.Count > 0)
         {
-            SpawnableData asset = assetPack.assets[0];
+            SpawnableObject asset = assetPack.spawnableObjects[0];
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {
-                PlaceAsset(asset.assetObject, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);
+                PlaceAsset(asset.objectPrefab, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);
             }
         }
     }

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 [System.Serializable]
 public class AssetBaseBrush : MonoBehaviour
 {
-    public virtual void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
+    public virtual void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
     {
         Debug.Log("Base Brush Build Called Using " + assetPack.name);
     }
@@ -87,19 +87,17 @@ public class AssetBaseBrush : MonoBehaviour
         List<Vector3> clockwiseDir = new List<Vector3>() { new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector3(-1, 0, 0), new Vector3(0, 0, 1) };
 
         int cycleStartPos = -1;
-        int i = 0;
 
         Vector3 firstDir = GetNextNodeDir(nodes[0]);
 
         // Find where in the winding order the shape starts //
-        foreach (Vector3 dir in clockwiseDir)
+        for (int i = 0; i < clockwiseDir.Count; i++)
         {
-            if (dir == firstDir)
+            if (clockwiseDir[i] == firstDir)
             {
                 cycleStartPos = i;
                 break;
             }
-            i++;
         }
 
         if (cycleStartPos == -1) return false;
@@ -122,20 +120,20 @@ public class AssetBaseBrush : MonoBehaviour
         if (!cycleFound)
         {
             cycleStartPos = -1;
-            i = 0;
 
             firstDir = GetNextNodeDir(nodes[0].prev);
 
             // Find prev node direction start in list //
-            foreach (Vector3 dir in clockwiseDir)
+            for (int i = 0; i < clockwiseDir.Count; i++)
             {
-                if (dir == firstDir)
+                if (clockwiseDir[i] == firstDir)
                 {
                     cycleStartPos = i;
                     break;
                 }
-                i++;
             }
+
+
 
             if (cycleStartPos == -1) return false;
 

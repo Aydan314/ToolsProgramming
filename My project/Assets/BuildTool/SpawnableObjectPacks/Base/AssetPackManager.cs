@@ -9,14 +9,9 @@ using UnityEditor.Rendering;
 public class AssetPackManager : MonoBehaviour
 {
     [SerializeField]
-    public List<AssetBasePack> assetBasePacks = new List<AssetBasePack>();
+    public List<SpawnableObjectPack> assetBasePacks = new List<SpawnableObjectPack>();
 
-    private void Start()
-    {
-        
-    }
-
-    public AssetBasePack GetActiveAssetPack()
+    public SpawnableObjectPack GetActiveAssetPack()
     {
         return assetBasePacks[0];
     }

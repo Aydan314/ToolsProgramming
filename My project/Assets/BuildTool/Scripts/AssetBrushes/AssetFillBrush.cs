@@ -9,13 +9,13 @@ using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class AssetFillBrush : AssetBaseBrush
 {
-    public override void Build(List<BuildNodeData> Selection, AssetBasePack assetPack)
+    public override void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
     {
         GameObject root = new GameObject();
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        SpawnableData asset = assetPack.assets[0];
+        SpawnableObject asset = assetPack.spawnableObjects[0];
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);
@@ -31,7 +31,7 @@ public class AssetFillBrush : AssetBaseBrush
             {
                 for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
                 {
-                    PlaceAsset(asset.assetObject, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                    PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
                 }
             }
             i++;
