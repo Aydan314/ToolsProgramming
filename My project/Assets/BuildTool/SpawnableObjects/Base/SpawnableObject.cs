@@ -5,4 +5,5 @@ public class SpawnableObject : ScriptableObject
 {
     public GameObject objectPrefab;
     public float defaultRotation;
+    public bool isCornerObject;
 }

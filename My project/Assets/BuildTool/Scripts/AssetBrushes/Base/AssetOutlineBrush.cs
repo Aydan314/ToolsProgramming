@@ -4,6 +4,8 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.VersionControl;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Outline Brush", menuName = "Scriptable Objects/BuildTool/Brushes/Outline Brush")]
+
 public class AssetOutlineBrush : AssetBaseBrush
 {
     public override void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
@@ -84,25 +86,25 @@ public class AssetOutlineBrush : AssetBaseBrush
 
         Vector3 step = (end - start) / distance;
 
-        //if (assetPack.cornerAssets.Count > 0)
-        //{
-        //    SpawnableData asset = assetPack.spawnableObjects[0];
-
-        //    // Places a corner asset if it is valid //
-        //    if (node.GetPrev() != node && DetectNodeAtCorner(node))
-        //    {
-        //        asset = assetPack.cornerAssets[0];
-        //        PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
-        //    }
-        //    // Otherwise places a default asset //
-        //    else
-        //    {
-        //        PlaceAsset(asset.assetObject, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
-        //    }
-        //}
-        if (assetPack.spawnableObjects.Count > 0)
+        if (assetPack.GetCornerObjects().Count > 0)
         {
             SpawnableObject asset = assetPack.spawnableObjects[0];
+
+            // Places a corner asset if it is valid //
+            if (node.GetPrev() != node && DetectNodeAtCorner(node))
+            {
+                asset = assetPack.GetCornerObjects()[0];
+                PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
+            }
+            // Otherwise places a default asset //
+            else
+            {
+                PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
+            }
+        }
+        if (assetPack.spawnableObjects.Count > 0)
+        {
+            SpawnableObject asset = assetPack.GetDefaultObjects()[0];
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {

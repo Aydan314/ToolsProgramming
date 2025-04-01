@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 [System.Serializable]
-public class AssetBaseBrush : MonoBehaviour
+public class AssetBaseBrush : ScriptableObject
 {
     public virtual void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
     {

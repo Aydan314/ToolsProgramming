@@ -5,8 +5,8 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.VersionControl;
 using UnityEngine;
-using static UnityEditor.Rendering.InspectorCurveEditor;
 
+[CreateAssetMenu(fileName = "Fill Brush", menuName = "Scriptable Objects/BuildTool/Brushes/Fill Brush")]
 public class AssetFillBrush : AssetBaseBrush
 {
     public override void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
@@ -15,7 +15,7 @@ public class AssetFillBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        SpawnableObject asset = assetPack.spawnableObjects[0];
+        SpawnableObject asset = assetPack.GetDefaultObjects()[0];
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);

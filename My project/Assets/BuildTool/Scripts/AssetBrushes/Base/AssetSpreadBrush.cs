@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Spread Brush", menuName = "Scriptable Objects/BuildTool/Brushes/Spread Brush")]
 public class AssetSpreadBrush : AssetBaseBrush
 {
     public override void Build(List<BuildNodeData> Selection, SpawnableObjectPack assetPack)
@@ -9,7 +10,7 @@ public class AssetSpreadBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        SpawnableObject asset = assetPack.spawnableObjects[0];
+        SpawnableObject asset = assetPack.GetDefaultObjects()[0];
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);
