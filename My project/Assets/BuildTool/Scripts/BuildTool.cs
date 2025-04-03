@@ -15,7 +15,7 @@ public class BuildTool : MonoBehaviour
     private Vector3 gridStart;
     float gridSize = 1;
     BuildNode prevNode = null;
-    AssetPackManager assetPackManager;
+    SpawnableObjectPackManager assetPackManager;
 
     bool creatingGrid = false;
     bool toolActive = false;
@@ -34,7 +34,7 @@ public class BuildTool : MonoBehaviour
     private void OnEnable()
     {
         SceneView.duringSceneGui += OnSceneGUI;
-        assetPackManager = GetComponent<AssetPackManager>();
+        assetPackManager = GetComponent<SpawnableObjectPackManager>();
 
         if (assetPackManager == null)
         {

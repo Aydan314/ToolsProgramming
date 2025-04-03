@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPrefab: {fileID: 919132149155446097, guid: 8f6322ad51415bc469cec0d03ef44853, type: 3}
   defaultRotation: 0
+  isCornerObject: 0

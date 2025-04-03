@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering;
 
 [ExecuteInEditMode]
-public class AssetPackManager : MonoBehaviour
+public class SpawnableObjectPackManager : MonoBehaviour
 {
     [SerializeField]
     public List<SpawnableObjectPack> assetBasePacks = new List<SpawnableObjectPack>();

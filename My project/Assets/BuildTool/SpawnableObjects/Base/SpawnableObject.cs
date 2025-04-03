@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SpawnableObject", menuName = "Scriptable Objects/BuildTool/SpawnableObject")]
