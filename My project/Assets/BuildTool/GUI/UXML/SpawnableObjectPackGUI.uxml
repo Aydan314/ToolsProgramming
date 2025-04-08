@@ -1,0 +1,16 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <engine:Label text="Spawnable Object Pack" name="Header" style="-unity-text-align: upper-center; font-size: 24px; -unity-font-style: bold;" />
+    <editor:ObjectField label="Pack Brush" name="brush" data-source-path="brush" binding-path="brush" />
+    <engine:FloatField label="Pack Grid Size" value="1" name="gridSize" binding-path="gridSize" />
+    <engine:VisualElement name="SpreadDensityTab" style="flex-grow: 1; height: auto; background-color: rgba(255, 255, 255, 0.12); width: auto;">
+        <engine:Label text="Object Spawn Density" style="-unity-text-align: upper-center; -unity-font-style: bold;" />
+        <engine:Slider value="1" high-value="1" fill="false" name="spreadDensity" binding-path="spreadDensity" style="margin-right: 10px; margin-left: 10px;" />
+        <engine:Label text="Label" binding-path="spreadDensity" style="-unity-text-align: upper-center;" />
+    </engine:VisualElement>
+    <engine:Label text="Pack Contents" name="PackContents" style="-unity-text-align: upper-center; -unity-font-style: bold; font-size: 16px; border-top-width: 10px; border-bottom-width: 10px;" />
+    <engine:VisualElement name="ItemList" style="flex-grow: 1;">
+        <editor:ObjectField />
+    </engine:VisualElement>
+    <engine:Button text="Add Spawnable Object" name="AddItem" style="border-left-width: 1px; border-right-width: 1px; background-color: rgb(88, 110, 88);" />
+    <engine:Button text="Remove Spawnable Object" name="RemoveItem" style="border-right-width: 1px; border-left-width: 1px; background-color: rgb(115, 88, 88);" />
+</engine:UXML>

@@ -17,4 +17,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a6c1ac180b91af74fae72c29e27a56a6, type: 2}
   - {fileID: 11400000, guid: 83c9e8046eb2de24a9d91b558da67ca6, type: 2}
   gridSize: 1
-  spreadDensity: 0
+  spreadDensity: 1

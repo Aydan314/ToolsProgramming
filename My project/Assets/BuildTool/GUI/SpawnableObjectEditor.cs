@@ -12,12 +12,15 @@ public class SpawnableObjectEditor : Editor
     public VisualElement root;
     public Label header;
     public Button preview;
+
     public override VisualElement CreateInspectorGUI()
     {
         root = new VisualElement();
 
-        VisualTreeAsset asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/BuildTool/UXML/SpawnableObjectGUI.uxml");
-        
+        string assetPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:VisualTreeAsset SpawnableObjectGUI")[0]);
+
+        VisualTreeAsset asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
+    
         asset.CloneTree(root);
 
         header = root.Q<Label>("Header");
