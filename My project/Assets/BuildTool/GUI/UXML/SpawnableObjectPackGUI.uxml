@@ -1,6 +1,6 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <engine:Label text="Spawnable Object Pack" name="Header" style="-unity-text-align: upper-center; font-size: 24px; -unity-font-style: bold;" />
-    <editor:ObjectField label="Pack Brush" name="brush" data-source-path="brush" binding-path="brush" />
+    <editor:ObjectField label="Pack Brush" name="brush" data-source-path="brush" binding-path="brush" data-source-type="AssetBaseBrush, Assembly-CSharp" type="AssetBaseBrush, Assembly-CSharp" />
     <engine:FloatField label="Pack Grid Size" value="1" name="gridSize" binding-path="gridSize" />
     <engine:VisualElement name="SpreadDensityTab" style="flex-grow: 1; height: auto; background-color: rgba(255, 255, 255, 0.12); width: auto;">
         <engine:Label text="Object Spawn Density" style="-unity-text-align: upper-center; -unity-font-style: bold;" />

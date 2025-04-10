@@ -1,9 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
-using Unity.VisualScripting;
-using System.Collections.Generic;
-using UnityEditor.Search;
 
 [CustomEditor(typeof(SpawnableObject)),CanEditMultipleObjects]
 
@@ -11,7 +8,7 @@ public class SpawnableObjectEditor : Editor
 {
     public VisualElement root;
     public Label header;
-    public Button preview;
+    public VisualElement preview;
 
     public override VisualElement CreateInspectorGUI()
     {
@@ -24,13 +21,13 @@ public class SpawnableObjectEditor : Editor
         asset.CloneTree(root);
 
         header = root.Q<Label>("Header");
-        preview = root.Q<Button>("Preview");
+        preview = root.Q<VisualElement>("Preview");
 
         header.text = serializedObject.targetObject.name;
 
         root.RegisterCallback<ChangeEvent<float>>(UpdateRotation);
         
-        root.RegisterCallback<MouseOverEvent>(UpdatePrefab);
+        root.RegisterCallback<ChangeEvent<UnityEngine.Object>>(UpdatePrefab);
         
 
         UpdateIconImage();
@@ -44,7 +41,7 @@ public class SpawnableObjectEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void UpdatePrefab(MouseOverEvent e)
+    private void UpdatePrefab(ChangeEvent<UnityEngine.Object> e)
     {
         serializedObject.Update();
         serializedObject.ApplyModifiedProperties();
@@ -58,10 +55,12 @@ public class SpawnableObjectEditor : Editor
 
         if (prefab != null)
         {
-            Background image = new Background();
-            image.texture = AssetPreview.GetAssetPreview(prefab);
-
-            preview.iconImage = image;
+            preview.style.backgroundImage = AssetPreview.GetAssetPreview(prefab);
+        }
+        else
+        {
+            string iconPath = AssetDatabase.FindAssets("t:Texture2D SpawnableIcon")[0];
+            preview.style.backgroundImage = AssetPreview.GetMiniThumbnail(serializedObject.targetObject);
         }
     }
 

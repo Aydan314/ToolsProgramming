@@ -16,4 +16,4 @@ MonoBehaviour:
   spawnableObjects:
   - {fileID: 11400000, guid: f3b5931fc08c230459f183effa0b90bd, type: 2}
   gridSize: 2
-  spreadDensity: 0
+  spreadDensity: 1
