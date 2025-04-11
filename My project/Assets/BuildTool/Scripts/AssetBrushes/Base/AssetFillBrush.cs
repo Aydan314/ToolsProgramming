@@ -31,7 +31,7 @@ public class AssetFillBrush : AssetBaseBrush
             {
                 for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
                 {
-                    PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                    if (Random.Range(0,100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
                 }
             }
             i++;

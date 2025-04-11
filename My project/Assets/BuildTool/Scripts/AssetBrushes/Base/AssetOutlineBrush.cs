@@ -94,12 +94,12 @@ public class AssetOutlineBrush : AssetBaseBrush
             if (node.GetPrev() != node && DetectNodeAtCorner(node))
             {
                 asset = assetPack.GetCornerObjects()[0];
-                PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
+                if (Random.Range(0,100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetCornerRotation(node) + asset.defaultRotation);
             }
             // Otherwise places a default asset //
             else
             {
-                PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
+                if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, rootObject, start, CalculateAssetRotation(node) + asset.defaultRotation);
             }
         }
         if (assetPack.spawnableObjects.Count > 0)
@@ -108,7 +108,7 @@ public class AssetOutlineBrush : AssetBaseBrush
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {
-                PlaceAsset(asset.objectPrefab, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);
+                if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);
             }
         }
     }
