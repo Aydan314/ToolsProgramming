@@ -25,8 +25,7 @@ public class SpawnableObjectPackGUI : Editor
 
         Label header = root.Q<Label>("Header");
         Button addItem = root.Q<Button>("AddItem");
-        Button removeItem = root.Q<Button>("RemoveItem");
-
+        
         list = root.Q<VisualElement>("ItemList");
 
         header.text = serializedObject.targetObject.name;
@@ -34,8 +33,7 @@ public class SpawnableObjectPackGUI : Editor
         root.RegisterCallback<ChangeEvent<float>>(UpdateValues);
         root.RegisterCallback<ChangeEvent<UnityEngine.Object>>(ObjectListChanged);
         addItem.RegisterCallback<ClickEvent>(AddItem);
-        removeItem.RegisterCallback<ClickEvent>(RemoveItem);
-
+        
         objectPack = (SpawnableObjectPack)serializedObject.targetObject;
 
         UpdateList();
@@ -56,17 +54,27 @@ public class SpawnableObjectPackGUI : Editor
     {
         list.Clear();
 
-        foreach (var item in objectPack.spawnableObjects)
+        if (objectPack.spawnableObjects != null)
         {
-            VisualElement newItem = new VisualElement();
+            int buttonIndex = 0;
+            foreach (var item in objectPack.spawnableObjects)
+            {
+                VisualElement newItem = new VisualElement();
 
-            listItemTemplate.CloneTree(newItem);
+                listItemTemplate.CloneTree(newItem);
 
-            UnityEditor.UIElements.ObjectField data = newItem.Q<UnityEditor.UIElements.ObjectField>("DataValue");
+                UnityEditor.UIElements.ObjectField data = newItem.Q<UnityEditor.UIElements.ObjectField>("DataValue");
 
-            data.SetValueWithoutNotify(item);
+                data.SetValueWithoutNotify(item);
 
-            list.Add(newItem);
+                Button button = newItem.Q<Button>("Remove");
+
+                int myIndex = buttonIndex;
+                button.RegisterCallback<ClickEvent>(e => RemoveItem(e, myIndex));
+
+                list.Add(newItem);
+                buttonIndex++;
+            }
         }
     }
 
@@ -79,46 +87,58 @@ public class SpawnableObjectPackGUI : Editor
     {
         VisualElement newItem = new VisualElement();
         listItemTemplate.CloneTree(newItem);
+
+        Button button = newItem.Q<Button>("Remove");
+        int buttonIndex = list.childCount;
+        button.RegisterCallback<ClickEvent>(e => RemoveItem(e, buttonIndex));
+
         list.Add(newItem);
 
         UpdatePackObjects();
     }
 
-    private void RemoveItem(ClickEvent e)
+    private void RemoveItem(ClickEvent e, int buttonIndex)
     {
         if (list.childCount > 0) 
         {
-            list.RemoveAt(list.childCount - 1);
+            UnityEditor.UIElements.ObjectField data = list.ElementAt(buttonIndex).Q<UnityEditor.UIElements.ObjectField>("DataValue");
+
+            if (data.value != null) list.RemoveAt(buttonIndex);
             UpdatePackObjects();
+            UpdateList();
+            
         }
         
     }
 
     private void UpdatePackObjects()
     {
-        objectPack.spawnableObjects.Clear();
-
-        foreach (var obj in list.Children())
+        if (objectPack.spawnableObjects != null)
         {
-            UnityEditor.UIElements.ObjectField data = obj.Q<UnityEditor.UIElements.ObjectField>("DataValue");
+            objectPack.spawnableObjects.Clear();
 
-            SpawnableObject newObject = ScriptableObject.CreateInstance<SpawnableObject>();
-
-            if (data.value != null)
+            foreach (var obj in list.Children())
             {
-                try
+                UnityEditor.UIElements.ObjectField data = obj.Q<UnityEditor.UIElements.ObjectField>("DataValue");
+
+                SpawnableObject newObject = ScriptableObject.CreateInstance<SpawnableObject>();
+
+                if (data.value != null)
                 {
-                    newObject = (SpawnableObject)data.value;
-                    objectPack.spawnableObjects.Add(newObject);
-                }
-                catch
-                {
-                    Debug.LogError("!! Item Placed In Pack Is Not A Spawnable Object !!");
+                    try
+                    {
+                        newObject = (SpawnableObject)data.value;
+                        objectPack.spawnableObjects.Add(newObject);
+                    }
+                    catch
+                    {
+                        Debug.LogError("!! Item Placed In Pack Is Not A Spawnable Object !!");
+                    }
                 }
             }
-        }
 
-        serializedObject.Update();
-        serializedObject.ApplyModifiedProperties();
+            serializedObject.Update();
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 }

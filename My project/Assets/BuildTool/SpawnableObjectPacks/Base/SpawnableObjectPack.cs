@@ -6,10 +6,10 @@ public class SpawnableObjectPack : ScriptableObject
 {
     public AssetBaseBrush brush;
     public List<SpawnableObject> spawnableObjects;
-    public float gridSize;
+    public float gridSize = 1.0f;
 
     [Range(0f, 1f)]
-    public float spreadDensity;
+    public float spreadDensity = 1.0f;
 
     public List<SpawnableObject> GetDefaultObjects()
     {

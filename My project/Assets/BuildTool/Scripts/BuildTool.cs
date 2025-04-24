@@ -10,13 +10,14 @@ public class BuildTool : MonoBehaviour
 {
     [SerializeField]
     GameObject nodeObject;
-    
+    [SerializeField]
+    SpawnableObjectPackManager assetPackManager;
+
 
     private Vector3 gridStart;
     float gridSize = 1;
     BuildNode prevNode = null;
-    SpawnableObjectPackManager assetPackManager;
-
+    
     bool creatingGrid = false;
     bool toolActive = false;
     List<BuildNode> footPrint;
@@ -34,7 +35,6 @@ public class BuildTool : MonoBehaviour
     private void OnEnable()
     {
         SceneView.duringSceneGui += OnSceneGUI;
-        assetPackManager = GetComponent<SpawnableObjectPackManager>();
 
         if (assetPackManager == null)
         {
