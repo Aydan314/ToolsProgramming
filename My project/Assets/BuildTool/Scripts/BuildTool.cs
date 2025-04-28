@@ -82,25 +82,19 @@ public class BuildTool : MonoBehaviour
     }
     private void SelectionComplete()
     {
-        if (assetPackManager.GetActiveAssetPack().gridSize != 0)
+        List<BuildNodeData> footprintData = new List<BuildNodeData>();
+
+        foreach (BuildNode node in footPrint)
         {
-            List<BuildNodeData> footprintData = new List<BuildNodeData>();
+            footprintData.Add(node.GetNodeData());
+        }
 
-            foreach (BuildNode node in footPrint)
-            {
-                footprintData.Add(node.GetNodeData());
-            }
-
+        if (!assetPackManager.GetActiveAssetPack().CheckErrors())
+        {
             assetPackManager.Build(footprintData);
+        }
 
-            DestroySelectionNodes();
-        }
-        else
-        {
-            Debug.LogError("Grid size cannot be 0!");
-            DestroySelectionNodes();
-        }
-        
+        DestroySelectionNodes();
         creatingGrid = false;
     }
 

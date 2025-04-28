@@ -1,12 +1,12 @@
 
 using UnityEditor;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 [CustomEditor(typeof(SpawnableObjectPack)), CanEditMultipleObjects]
 public class SpawnableObjectPackGUI : Editor
 {
-    
     VisualElement root;
     VisualTreeAsset listItemTemplate;
     SpawnableObjectPack objectPack;
@@ -46,8 +46,16 @@ public class SpawnableObjectPackGUI : Editor
 
     private void UpdateValues(ChangeEvent<float> change)
     {
+        FloatField gridSize = root.Q<FloatField>("gridSize");
+
+        if (gridSize.value < 0f)
+        {
+            Debug.LogError("!! Grid size of \"" + serializedObject.targetObject.name + "\" cannot be less than 0 !!");
+        }
+        
         serializedObject.Update();
         serializedObject.ApplyModifiedProperties();
+        
     }
 
     private void UpdateList()
@@ -80,7 +88,21 @@ public class SpawnableObjectPackGUI : Editor
 
     private void ObjectListChanged(ChangeEvent<UnityEngine.Object> e)
     {
+        FloatField gridSize = root.Q<FloatField>("gridSize");
+        UnityEditor.UIElements.ObjectField objectField = root.Q<UnityEditor.UIElements.ObjectField>("brush");
+
+        if (gridSize.value == 0f)
+        {
+            Debug.LogError("!! Grid size of \"" + serializedObject.targetObject.name + "\" cannot be 0 !!");
+        }
+
+        if (objectField.value == null)
+        {
+            Debug.LogError("!! Brush for \"" + serializedObject.targetObject.name + "\" cannot be null !!");
+        }
+
         UpdatePackObjects();
+        
     }
 
     private void AddItem(ClickEvent e)
@@ -113,6 +135,8 @@ public class SpawnableObjectPackGUI : Editor
 
     private void UpdatePackObjects()
     {
+        
+
         if (objectPack.spawnableObjects != null)
         {
             objectPack.spawnableObjects.Clear();
@@ -139,6 +163,7 @@ public class SpawnableObjectPackGUI : Editor
 
             serializedObject.Update();
             serializedObject.ApplyModifiedProperties();
+            
         }
     }
 }

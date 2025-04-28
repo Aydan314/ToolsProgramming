@@ -57,29 +57,41 @@ public class PackEditorGUI : Editor
 
     private void UpdateSelectedPack()
     {
-        activePack.value = manager.GetActiveAssetPack();
         string iconPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:Texture2D SpawnableIcon")[0]);
         Texture2D defaultTex = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
 
-        if (manager.GetActiveAssetPack().spawnableObjects.Count > 0)
+
+        activePack.value = manager.GetActiveAssetPack();
+
+        if (manager.GetActiveAssetPack() != null)
         {
-            imageList.style.backgroundImage = AssetPreview.GetAssetPreview(manager.GetActiveAssetPack().spawnableObjects[0].objectPrefab);
+            if (manager.GetActiveAssetPack().spawnableObjects.Count > 0) imageList.style.backgroundImage = AssetPreview.GetAssetPreview(manager.GetActiveAssetPack().spawnableObjects[0].objectPrefab);
+            else imageList.style.backgroundImage = defaultTex;
         }
         else imageList.style.backgroundImage = defaultTex;
 
         int i = 1;
         foreach (var item in imageList.Children())
         {
-            if (manager.GetActiveAssetPack().spawnableObjects.Count > i)
+            if ( manager.GetActiveAssetPack() != null)
             {
-                item.style.backgroundImage = AssetPreview.GetAssetPreview(manager.GetActiveAssetPack().spawnableObjects[i].objectPrefab);
+                if (manager.GetActiveAssetPack().spawnableObjects.Count > i)
+                {
+                    item.style.backgroundImage = AssetPreview.GetAssetPreview(manager.GetActiveAssetPack().spawnableObjects[i].objectPrefab);
+                }
+                else
+                {
+                    item.style.backgroundImage = defaultTex;
+                }
             }
             else
             {
                 item.style.backgroundImage = defaultTex;
             }
+
             i++;
         }
+
     }
 
     private void UpdateValues(ChangeEvent<float> change)

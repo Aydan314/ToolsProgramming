@@ -43,8 +43,15 @@ public class SpawnableObjectEditor : Editor
 
     private void UpdatePrefab(ChangeEvent<UnityEngine.Object> e)
     {
+        GameObject prefab = ((SpawnableObject)serializedObject.targetObject).objectPrefab;
+
         serializedObject.Update();
         serializedObject.ApplyModifiedProperties();
+
+        if (prefab == null)
+        {
+            Debug.LogError("!! Object Prefab in \"" + serializedObject.targetObject.name + "\" cannot be Null !!");
+        }
 
         UpdateIconImage();
     }
