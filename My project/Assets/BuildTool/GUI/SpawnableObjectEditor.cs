@@ -12,6 +12,7 @@ public class SpawnableObjectEditor : Editor
 
     public override VisualElement CreateInspectorGUI()
     {
+        // Get GUI elements from UXML //
         root = new VisualElement();
 
         string assetPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:VisualTreeAsset SpawnableObjectGUI")[0]);
@@ -48,6 +49,7 @@ public class SpawnableObjectEditor : Editor
         serializedObject.Update();
         serializedObject.ApplyModifiedProperties();
 
+        // Error check if objects prefab isnt set //
         if (prefab == null)
         {
             Debug.LogError("!! Object Prefab in \"" + serializedObject.targetObject.name + "\" cannot be Null !!");
@@ -62,10 +64,12 @@ public class SpawnableObjectEditor : Editor
 
         if (prefab != null)
         {
+            // Show preview of object prefab //
             preview.style.backgroundImage = AssetPreview.GetAssetPreview(prefab);
         }
         else
         {
+            // Show default spawnable object icon //
             string iconPath = AssetDatabase.FindAssets("t:Texture2D SpawnableIcon")[0];
             preview.style.backgroundImage = AssetPreview.GetMiniThumbnail(serializedObject.targetObject);
         }

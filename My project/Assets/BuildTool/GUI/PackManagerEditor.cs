@@ -1,25 +1,31 @@
-using Unity.VisualScripting;
-using UnityEditor;
 
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
-using static UnityEditor.Timeline.Actions.MenuPriority;
+
+
 
 [CustomEditor(typeof(SpawnableObjectPackManager)), CanEditMultipleObjects]
-public class PackEditorGUI : Editor
+public class PackEditorGUI : EditorWindow
 {
-
+    
     VisualElement root;
     VisualTreeAsset listItemTemplate;
     VisualElement list;
     VisualElement imageList;
     UnityEditor.UIElements.ObjectField activePack;
-    SpawnableObjectPackManager manager;
-    public override VisualElement CreateInspectorGUI()
+    public SpawnableObjectPackManager manager;
+
+    [MenuItem("BuildTool/Create Pack Editor Window")]
+    public static void ShowWindow()
     {
-        
-        root = new VisualElement();
+        PackEditorGUI wnd = GetWindow<PackEditorGUI>();
+        wnd.titleContent = new GUIContent("BuildTool Pack Editor");
+    }
+    public void CreateGUI()
+    {
+        // Get GUI elements from UXML //
+        root = rootVisualElement;
 
         string assetPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:VisualTreeAsset PackManagerGUI")[0]);
         VisualTreeAsset asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
@@ -34,7 +40,7 @@ public class PackEditorGUI : Editor
         imageList = root.Q<VisualElement>("ImageList");
         activePack = root.Q<UnityEditor.UIElements.ObjectField>("SelectedPack");
 
-        manager = (SpawnableObjectPackManager)serializedObject.targetObject;
+        if (manager == null) Debug.LogError("!! Object Pack Editor Not Set !!");
 
 
         root.RegisterCallback<ChangeEvent<float>>(UpdateValues);
@@ -45,24 +51,17 @@ public class PackEditorGUI : Editor
 
         UpdateList();
         UpdateSelectedPack();
-
-
-        serializedObject.Update();
-        serializedObject.ApplyModifiedProperties();
-
-       
-
-        return root;
     }
 
     private void UpdateSelectedPack()
     {
+        // Get default spawnable object icon //
         string iconPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:Texture2D SpawnableIcon")[0]);
         Texture2D defaultTex = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
 
-
         activePack.value = manager.GetActiveAssetPack();
 
+        // Update largest preview with first item in new pack //
         if (manager.GetActiveAssetPack() != null)
         {
             if (manager.GetActiveAssetPack().spawnableObjects.Count > 0) imageList.style.backgroundImage = AssetPreview.GetAssetPreview(manager.GetActiveAssetPack().spawnableObjects[0].objectPrefab);
@@ -70,6 +69,7 @@ public class PackEditorGUI : Editor
         }
         else imageList.style.backgroundImage = defaultTex;
 
+        // Iterate through other 3 smaller previews and set with pack prefab icons //
         int i = 1;
         foreach (var item in imageList.Children())
         {
@@ -96,14 +96,15 @@ public class PackEditorGUI : Editor
 
     private void UpdateValues(ChangeEvent<float> change)
     {
-        serializedObject.Update();
-        serializedObject.ApplyModifiedProperties();
+        
     }
 
     private void UpdateList()
     {
+        // Clear list of packs //
         list.Clear();
 
+        // Populate list with packs from scriptable object //
         int buttonIndex = 0;
 
         foreach (var item in manager.assetBasePacks)
@@ -141,6 +142,7 @@ public class PackEditorGUI : Editor
     {
         if (list.childCount > 0)
         {
+            // Extract data from selected GUI field //
             UnityEditor.UIElements.ObjectField data = list.ElementAt(buttonIndex).Q<UnityEditor.UIElements.ObjectField>("DataValue");
             if (data.value != null)
             {
@@ -153,9 +155,11 @@ public class PackEditorGUI : Editor
 
     private void AddItem(ClickEvent e)
     {
+        // Get list item GUI from UXML //
         VisualElement newItem = new VisualElement();
         listItemTemplate.CloneTree(newItem);
 
+        // Add functionality to GUI //
         Button select = newItem.Q<Button>("Select");
         Button remove = newItem.Q<Button>("Remove");
 
@@ -172,6 +176,7 @@ public class PackEditorGUI : Editor
     {
         if (list.childCount > 0)
         {
+            // Removve item from pack list //
             UnityEditor.UIElements.ObjectField data = list.ElementAt(buttonIndex).Q<UnityEditor.UIElements.ObjectField>("DataValue");
 
             if (data.value != null) list.RemoveAt(buttonIndex);
@@ -184,8 +189,10 @@ public class PackEditorGUI : Editor
 
     private void UpdatePackManager()
     {
+        // Clear scriptable Objects list of packs //
         manager.assetBasePacks.Clear();
 
+        // Populate list with values from GUI //
         foreach (var obj in list.Children())
         {
             UnityEditor.UIElements.ObjectField data = obj.Q<UnityEditor.UIElements.ObjectField>("DataValue");
@@ -206,8 +213,7 @@ public class PackEditorGUI : Editor
             }
         }
 
-        serializedObject.Update();
-        serializedObject.ApplyModifiedProperties();
+        
 
         UpdateSelectedPack();
     }

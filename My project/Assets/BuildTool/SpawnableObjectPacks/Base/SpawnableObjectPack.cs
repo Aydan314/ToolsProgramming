@@ -11,6 +11,7 @@ public class SpawnableObjectPack : ScriptableObject
 
     public bool CheckErrors()
     {
+        // Check that the data in the pack is all valid //
         if (gridSize <= 0f)
         {
             Debug.LogError("!! Grid Size cannot be 0 or less !!");
@@ -46,6 +47,7 @@ public class SpawnableObjectPack : ScriptableObject
 
     public List<SpawnableObject> GetDefaultObjects()
     {
+        // Lists all objects that arent corners //
         List<SpawnableObject> defaultObjects = new List<SpawnableObject>();
 
         foreach (SpawnableObject obj in spawnableObjects)
@@ -58,6 +60,7 @@ public class SpawnableObjectPack : ScriptableObject
 
     public List<SpawnableObject> GetCornerObjects()
     {
+        // Lists all objects that are corners //
         List<SpawnableObject> cornerObjects = new List<SpawnableObject>();
 
         foreach (SpawnableObject obj in spawnableObjects)

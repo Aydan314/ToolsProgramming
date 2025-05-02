@@ -13,6 +13,7 @@ public class SpawnableObjectPackGUI : Editor
     VisualElement list;
     public override VisualElement CreateInspectorGUI()
     {
+        // Get GUI elements from UXML //
         root = new VisualElement();
         
         string assetPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:VisualTreeAsset SpawnableObjectPackGUI")[0]);
@@ -46,6 +47,7 @@ public class SpawnableObjectPackGUI : Editor
 
     private void UpdateValues(ChangeEvent<float> change)
     {
+        // Error check if grid size is negativve //
         FloatField gridSize = root.Q<FloatField>("gridSize");
 
         if (gridSize.value < 0f)
@@ -60,10 +62,12 @@ public class SpawnableObjectPackGUI : Editor
 
     private void UpdateList()
     {
+        // Reset list of spawnable objects //
         list.Clear();
 
         if (objectPack.spawnableObjects != null)
         {
+            // Populate list with values from scriptable object //
             int buttonIndex = 0;
             foreach (var item in objectPack.spawnableObjects)
             {
@@ -88,6 +92,7 @@ public class SpawnableObjectPackGUI : Editor
 
     private void ObjectListChanged(ChangeEvent<UnityEngine.Object> e)
     {
+        // Error check if grid size 0 or brush not set //
         FloatField gridSize = root.Q<FloatField>("gridSize");
         UnityEditor.UIElements.ObjectField objectField = root.Q<UnityEditor.UIElements.ObjectField>("brush");
 
@@ -107,6 +112,7 @@ public class SpawnableObjectPackGUI : Editor
 
     private void AddItem(ClickEvent e)
     {
+        // Get list element GUI from UXML //
         VisualElement newItem = new VisualElement();
         listItemTemplate.CloneTree(newItem);
 
@@ -123,6 +129,7 @@ public class SpawnableObjectPackGUI : Editor
     {
         if (list.childCount > 0) 
         {
+            // Remove list entry //
             UnityEditor.UIElements.ObjectField data = list.ElementAt(buttonIndex).Q<UnityEditor.UIElements.ObjectField>("DataValue");
 
             if (data.value != null) list.RemoveAt(buttonIndex);
@@ -135,12 +142,12 @@ public class SpawnableObjectPackGUI : Editor
 
     private void UpdatePackObjects()
     {
-        
-
         if (objectPack.spawnableObjects != null)
         {
+            // Clear scriptable objects list //
             objectPack.spawnableObjects.Clear();
 
+            // Populate list with values from GUI elements //
             foreach (var obj in list.Children())
             {
                 UnityEditor.UIElements.ObjectField data = obj.Q<UnityEditor.UIElements.ObjectField>("DataValue");
