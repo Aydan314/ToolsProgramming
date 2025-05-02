@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 731d5cd82de72454782f657646d0648d, type: 3}
   m_Name: SpawnableObjectPackManager
   m_EditorClassIdentifier: 
-  assetBasePacks: []
-  selectedPack: {fileID: 0}
+  assetBasePacks:
+  - {fileID: 11400000, guid: cb73d378430d413428ae3c7bdf64ab33, type: 2}
+  - {fileID: 11400000, guid: 6501b9e6810005044baae08f63c40a17, type: 2}
+  - {fileID: 11400000, guid: b795621561375694788b31e4e4bdd9ca, type: 2}
+  - {fileID: 11400000, guid: 685ced84afe83e4429c6d55a6bde5c46, type: 2}
+  selectedPack: {fileID: 11400000, guid: 6501b9e6810005044baae08f63c40a17, type: 2}

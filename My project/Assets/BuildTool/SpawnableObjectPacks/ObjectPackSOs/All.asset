@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d866837a88bf3948bcc82b864ef5251, type: 3}
   m_Name: All
   m_EditorClassIdentifier: 
-  brush: {fileID: 11400000, guid: 737609f194bb46c4881c192cbe89930d, type: 2}
+  brush: {fileID: 11400000, guid: 90c33e326430c754d89435e214e46edb, type: 2}
   spawnableObjects:
   - {fileID: 11400000, guid: a6c1ac180b91af74fae72c29e27a56a6, type: 2}
   - {fileID: 11400000, guid: f3b5931fc08c230459f183effa0b90bd, type: 2}

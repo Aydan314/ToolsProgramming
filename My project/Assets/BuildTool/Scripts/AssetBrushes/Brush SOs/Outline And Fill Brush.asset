@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7c0b12177ebaae489e01dbd13a200b1, type: 3}
-  m_Name: Spread Brush
+  m_Script: {fileID: 11500000, guid: 2ebaef715e4cdfc4cac0877f8e6b21e9, type: 3}
+  m_Name: Outline And Fill Brush
   m_EditorClassIdentifier: 

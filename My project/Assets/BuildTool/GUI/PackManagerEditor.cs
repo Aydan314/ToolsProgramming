@@ -47,17 +47,10 @@ public class PackEditorGUI : EditorWindow
         GameObject found = GameObject.FindGameObjectWithTag("BuildTool");
 
         if (found == null) Debug.LogError("!! Cannot find build tool in scene !!");
-        else 
-        {
-            buildTool = found.GetComponent<BuildTool>();
-        }
-
+        else buildTool = found.GetComponent<BuildTool>();
         
-
         root.RegisterCallback<ChangeEvent<UnityEngine.Object>>(ObjectListChanged);
         addItem.RegisterCallback<ClickEvent>(AddItem);
-
-
 
         UpdateList();
         UpdateSelectedPack();
@@ -177,6 +170,8 @@ public class PackEditorGUI : EditorWindow
         }
 
         UpdateSelectedPack();
+
+        
     }
 
     private void AddItem(ClickEvent e)
@@ -190,9 +185,10 @@ public class PackEditorGUI : EditorWindow
         Button remove = newItem.Q<Button>("Remove");
 
         int buttonIndex = list.childCount;
-        select.RegisterCallback<ClickEvent>(e => SelectItem(e, buttonIndex));
-        remove.RegisterCallback<ClickEvent>(e => RemoveItem(e, buttonIndex));
 
+        select.clicked += () => SelectItem(null, buttonIndex);
+        remove.clicked += () => RemoveItem(null, buttonIndex);
+            
         list.Add(newItem);
 
         UpdatePackManager();
@@ -239,7 +235,8 @@ public class PackEditorGUI : EditorWindow
             }
         }
 
-        
+        EditorUtility.SetDirty(manager);
+        AssetDatabase.SaveAssetIfDirty(manager);
 
         UpdateSelectedPack();
     }
