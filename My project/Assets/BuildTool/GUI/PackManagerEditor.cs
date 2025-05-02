@@ -1,11 +1,9 @@
 
 using UnityEditor;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-
-
-[CustomEditor(typeof(SpawnableObjectPackManager)), CanEditMultipleObjects]
 public class PackEditorGUI : EditorWindow
 {
     
@@ -13,8 +11,11 @@ public class PackEditorGUI : EditorWindow
     VisualTreeAsset listItemTemplate;
     VisualElement list;
     VisualElement imageList;
+    Label toolActive;
     UnityEditor.UIElements.ObjectField activePack;
     public SpawnableObjectPackManager manager;
+    
+    BuildTool buildTool;
 
     [MenuItem("BuildTool/Create Pack Editor Window")]
     public static void ShowWindow()
@@ -39,11 +40,20 @@ public class PackEditorGUI : EditorWindow
         list = root.Q<VisualElement>("PackList");
         imageList = root.Q<VisualElement>("ImageList");
         activePack = root.Q<UnityEditor.UIElements.ObjectField>("SelectedPack");
+        toolActive = root.Q<Label>("toolActive");
 
         if (manager == null) Debug.LogError("!! Object Pack Editor Not Set !!");
 
+        GameObject found = GameObject.FindGameObjectWithTag("BuildTool");
 
-        root.RegisterCallback<ChangeEvent<float>>(UpdateValues);
+        if (found == null) Debug.LogError("!! Cannot find build tool in scene !!");
+        else 
+        {
+            buildTool = found.GetComponent<BuildTool>();
+        }
+
+        
+
         root.RegisterCallback<ChangeEvent<UnityEngine.Object>>(ObjectListChanged);
         addItem.RegisterCallback<ClickEvent>(AddItem);
 
@@ -94,9 +104,25 @@ public class PackEditorGUI : EditorWindow
 
     }
 
-    private void UpdateValues(ChangeEvent<float> change)
+    private void Update()
     {
-        
+        if (buildTool != null)
+        {
+            if (buildTool.toolActive)
+            {
+                toolActive.text = "-Build Tool Enabled -";
+                toolActive.style.backgroundColor = new Color(0.25f, 0.5f, 0.25f);
+            }
+            else
+            {
+                toolActive.text = "-Build Tool Disabled -";
+                toolActive.style.backgroundColor = new Color(0.5f, 0.25f, 0.25f);
+            }
+        }
+        else
+        {
+            toolActive.text = "!! Cannot Find Tool !!";
+        }
     }
 
     private void UpdateList()

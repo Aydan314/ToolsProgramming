@@ -19,7 +19,7 @@ public class BuildTool : MonoBehaviour
     BuildNode prevNode = null;
     
     bool creatingGrid = false;
-    bool toolActive = false;
+    public bool toolActive = false;
     List<BuildNode> footPrint;
     float inputCooldown = 0.0f;
     float clickCooldown = 0.0f;
@@ -38,11 +38,8 @@ public class BuildTool : MonoBehaviour
 
         if (assetPackManager == null)
         {
-            Debug.LogError("Asset Pack Manager could not be found!");
+            Debug.LogError("!! Asset Pack Manager could not be found !!");
         }
-
-        Debug.Log("- Press B to toggle build tool");
-       
     }
 
     // Remove tools update function from call //
@@ -125,21 +122,25 @@ public class BuildTool : MonoBehaviour
     // Create a new grid selection //
     private void BeginGridCreation(Vector3 point)
     {
-        gridSize = assetPackManager.GetActiveAssetPack().gridSize;
-        creatingGrid = true;
-        footPrint = new List<BuildNode>();
+        if (assetPackManager.GetActiveAssetPack() != null)
+        {
+            gridSize = assetPackManager.GetActiveAssetPack().gridSize;
+            creatingGrid = true;
+            footPrint = new List<BuildNode>();
 
-        GameObject newObject = Instantiate(nodeObject);
-        BuildNode newNode = newObject.GetComponent<BuildNode>();
+            GameObject newObject = Instantiate(nodeObject);
+            BuildNode newNode = newObject.GetComponent<BuildNode>();
 
-        gridStart = point;
-        newObject.transform.position = gridStart;
-        newObject.transform.parent = this.gameObject.transform;
+            gridStart = point;
+            newObject.transform.position = gridStart;
+            newObject.transform.parent = this.gameObject.transform;
 
-        newNode.SetAsStartNode();
-        footPrint.Add(newNode);
+            newNode.SetAsStartNode();
+            footPrint.Add(newNode);
 
-        prevNode = newNode;
+            prevNode = newNode;
+        }
+        else Debug.LogError("!! No pack selected !!");
     }
 
     // Add a point aligned to the first point in the selection grid //
@@ -328,9 +329,6 @@ public class BuildTool : MonoBehaviour
                 if (e.keyCode == KeyCode.B && inputCooldown == 0.0f)
                 {
                     toolActive = !toolActive;
-
-                    if (toolActive) Debug.Log("Build Tool Enabled");
-                    else Debug.Log("Build Tool Disabled");
 
                     inputCooldown = 0.5f;
                 }

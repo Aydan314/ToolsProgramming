@@ -44,7 +44,7 @@ public class BuildNodeData
 public class BuildNode : MonoBehaviour
 {
     LineRenderer lineRenderer;
-    Renderer renderer;
+    Renderer nodeRenderer;
     bool connected = false;
 
     public BuildNodeData nodeData;
@@ -73,7 +73,7 @@ public class BuildNode : MonoBehaviour
         SceneView.duringSceneGui += OnSceneGUI;
 
         lineRenderer = GetComponent<LineRenderer>();
-        renderer = GetComponent<Renderer>();
+        nodeRenderer = GetComponent<Renderer>();
 
         SetMaterial(drawColour);
 
@@ -139,11 +139,11 @@ public class BuildNode : MonoBehaviour
     }
     public void SetMaterial(Material colour)
     {
-        renderer.sharedMaterial = colour;
+        nodeRenderer.sharedMaterial = colour;
     }
     public Material GetMaterial()
     {
-        return renderer.sharedMaterial;
+        return nodeRenderer.sharedMaterial;
     }
 
     public BuildNodeData GetNodeData()

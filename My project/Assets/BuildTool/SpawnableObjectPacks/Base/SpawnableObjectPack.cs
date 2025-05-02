@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SpawnableObjectPack", menuName = "Scriptable Objects/BuildTool/SpawnableObjectPack")]
+[Serializable]
 public class SpawnableObjectPack : ScriptableObject
 {
     public AssetBaseBrush brush;
