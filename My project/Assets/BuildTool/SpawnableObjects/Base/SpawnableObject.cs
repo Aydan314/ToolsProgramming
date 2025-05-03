@@ -6,5 +6,7 @@ public class SpawnableObject : ScriptableObject
 {
     public GameObject objectPrefab;
     public float defaultRotation;
-    public bool isCornerObject;
+    public bool isOutsetCornerObject;
+    public bool isInsetCornerObject;
+    public bool isOutlineObject;
 }

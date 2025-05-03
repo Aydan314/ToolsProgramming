@@ -49,25 +49,51 @@ public class SpawnableObjectPack : ScriptableObject
 
     public List<SpawnableObject> GetDefaultObjects()
     {
-        // Lists all objects that arent corners //
+        // Lists all objects that arent corners or outline //
         List<SpawnableObject> defaultObjects = new List<SpawnableObject>();
 
         foreach (SpawnableObject obj in spawnableObjects)
         {
-            if (!obj.isCornerObject) defaultObjects.Add(obj);
+            if (!obj.isOutsetCornerObject && !obj.isInsetCornerObject && !obj.isOutlineObject) defaultObjects.Add(obj);
         }
 
         return defaultObjects;
     }
 
-    public List<SpawnableObject> GetCornerObjects()
+    public List<SpawnableObject> GetOutlineObjects()
+    {
+        // Lists all objects that are outline and not corners //
+        List<SpawnableObject> outlineObjects = new List<SpawnableObject>();
+
+        foreach (SpawnableObject obj in spawnableObjects)
+        {
+            if (obj.isOutlineObject && !obj.isOutsetCornerObject && !obj.isInsetCornerObject) outlineObjects.Add(obj);
+        }
+
+        return outlineObjects;
+    }
+
+    public List<SpawnableObject> GetOutsetCornerObjects()
     {
         // Lists all objects that are corners //
         List<SpawnableObject> cornerObjects = new List<SpawnableObject>();
 
         foreach (SpawnableObject obj in spawnableObjects)
         {
-            if (obj.isCornerObject) cornerObjects.Add(obj);
+            if (obj.isOutsetCornerObject) cornerObjects.Add(obj);
+        }
+
+        return cornerObjects;
+    }
+
+    public List<SpawnableObject> GetInsetCornerObjects()
+    {
+        // Lists all objects that are corners //
+        List<SpawnableObject> cornerObjects = new List<SpawnableObject>();
+
+        foreach (SpawnableObject obj in spawnableObjects)
+        {
+            if (obj.isInsetCornerObject) cornerObjects.Add(obj);
         }
 
         return cornerObjects;

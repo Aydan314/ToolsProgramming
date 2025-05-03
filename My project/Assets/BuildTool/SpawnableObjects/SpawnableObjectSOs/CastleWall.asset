@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49ca8287a89446c4d9152e529f1ac944, type: 3}
-  m_Name: Fence
+  m_Name: CastleWall
   m_EditorClassIdentifier: 
-  objectPrefab: {fileID: 919132149155446097, guid: 5d850fb4bc5b1ad4fba9bd232faf2212, type: 3}
-  defaultRotation: 180
-  isCornerObject: 0
+  objectPrefab: {fileID: 919132149155446097, guid: 9dfa5ac2f6687b043aefa48f0e6bae27, type: 3}
+  defaultRotation: 0
+  isOutsetCornerObject: 0
+  isInsetCornerObject: 0
   isOutlineObject: 1

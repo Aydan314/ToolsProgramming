@@ -18,7 +18,47 @@ public class AssetOutlineAndFillBrush : AssetBaseBrush
         SpawnableObject asset = assetPack.GetDefaultObjects()[0];
         BuildNodeData startNode = Selection[0];
 
-        Debug.Log("outline and fill");
+        Selection = ForceWindingOrderClockwise(Selection);
+        int i = 0;
+
+
+        BuildNodeData buildNode = startNode;
+
+        // Loop through shapes nodes and connect points up with placed assets //
+        while (buildNode != null)
+        {
+            BuildAssetsBetween(buildNode, assetPack, root);
+            buildNode = buildNode.GetNext();
+
+            if (buildNode == startNode) break;
+
+            if (i > 100)
+            {
+                Debug.LogError("!! Max Selection Iteration Reached !!");
+                break;
+            }
+            i++;
+        }
+
+
+        List<Rect> footprintShape = ConvertSelectionToRects(Selection);
+        i = 0;
+
+        // Iterate through each extracted rect and fill //
+        foreach (Rect rect in footprintShape)
+        {
+
+            for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
+            {
+                for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
+                {
+                    if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                }
+            }
+            i++;
+        }
+
+
 
     }
 
