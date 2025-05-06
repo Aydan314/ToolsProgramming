@@ -16,10 +16,9 @@ public class AssetOutlineAndFillBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        
         BuildNodeData startNode = Selection[0];
 
-        
+        // Create copy of selection for outline as fill destroys data //
         List<BuildNodeData> SelectionCopy = new List<BuildNodeData>();
 
         int index = 0;
@@ -48,25 +47,42 @@ public class AssetOutlineAndFillBrush : AssetBaseBrush
         SelectionCopy = ForceWindingOrderClockwise(SelectionCopy);
         Selection = ForceWindingOrderClockwise(Selection);
 
-
-
-
         List<Rect> footprintShape = ConvertSelectionToRects(Selection);
         int i = 0;
 
         if (footprintShape.Count > 0)
         {
-            // Iterate through each extracted rect and fill //
+            // Iterate through each extracted rect and fill avoiding outline //
             foreach (Rect rect in footprintShape)
             {
-
                 for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
                 {
+
                     for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
                     {
-                        SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetDefaultObjects());
-                        if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                        bool intersectsOutline = false;
+
+                        // Avoid outline intersection //
+                        foreach (var node in SelectionCopy)
+                        {
+                            // Matches any x outline values //
+                            if (x >= node.position.x && x <= node.GetPrev().position.x && y == node.position.z) { intersectsOutline = true; break; }
+                            if (x >= node.position.x && x <= node.GetNext().position.x && y == node.position.z) { intersectsOutline = true; break; }
+
+                            // Mathches any y outline values //
+                            if (y >= node.position.z && y <= node.GetPrev().position.z && x == node.position.x) { intersectsOutline = true; break; }
+                            if (y >= node.position.z && y <= node.GetNext().position.z && x == node.position.x) { intersectsOutline = true; break; }
+
+                        }
+                        //Debug.Log(intersectsOutline);
+
+                        if (!intersectsOutline)
+                        {
+                            SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetDefaultObjects());
+                            if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                        }
                     }
+
                 }
                 i++;
             }

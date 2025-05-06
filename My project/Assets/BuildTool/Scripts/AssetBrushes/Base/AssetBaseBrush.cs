@@ -432,10 +432,10 @@ public class AssetBaseBrush : ScriptableObject
         List<SpawnableObject> outsetCorners = assetPack.GetOutsetCornerObjects();
         List<SpawnableObject> defaults = assetPack.GetDefaultObjects();
 
-        List<BuildNodeData> corner = new List<BuildNodeData>() { buildNode.prev, buildNode, buildNode.next};
+        List<BuildNodeData> corner = new List<BuildNodeData>() { buildNode.GetPrev(), buildNode, buildNode.GetNext()};
 
-        Vector3 prevNodeDir = (buildNode.position - buildNode.prev.position).normalized;
-        Vector3 nextNodeDir = (buildNode.position - buildNode.next.position).normalized;
+        Vector3 prevNodeDir = (buildNode.position - buildNode.GetPrev().position).normalized;
+        Vector3 nextNodeDir = (buildNode.position - buildNode.GetNext().position).normalized;
 
         // Anti clockwise winding order //
         if (!IsWindingOrderClockwise(corner))
@@ -488,10 +488,10 @@ public class AssetBaseBrush : ScriptableObject
         }
         if (assetPack.GetOutlineObjects().Count > 0)
         {
-            SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetOutlineObjects());
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {
+                SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetOutlineObjects());
                 if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, rootObject, start + (i * step), CalculateAssetRotation(node) + asset.defaultRotation);
             }
         }
