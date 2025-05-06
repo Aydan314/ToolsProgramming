@@ -15,7 +15,7 @@ public class AssetFillBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        SpawnableObject asset = assetPack.GetDefaultObjects()[0];
+        
         BuildNodeData startNode = Selection[0];
 
         Selection = ForceWindingOrderClockwise(Selection);
@@ -26,11 +26,11 @@ public class AssetFillBrush : AssetBaseBrush
         // Iterate through each extracted rect and fill //
         foreach (Rect rect in footprintShape)
         {
-            
             for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
             {
                 for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
                 {
+                    SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetDefaultObjects());
                     if (Random.Range(0,100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
                 }
             }
@@ -38,6 +38,6 @@ public class AssetFillBrush : AssetBaseBrush
         }
 
     }
-
+    
     
 }

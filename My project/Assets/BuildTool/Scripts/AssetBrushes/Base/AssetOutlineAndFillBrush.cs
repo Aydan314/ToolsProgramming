@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.VersionControl;
@@ -15,49 +16,83 @@ public class AssetOutlineAndFillBrush : AssetBaseBrush
         root.name = assetPack.name + " Brush";
         root.transform.position = Selection[0].position;
 
-        SpawnableObject asset = assetPack.GetDefaultObjects()[0];
+        
         BuildNodeData startNode = Selection[0];
 
-        Selection = ForceWindingOrderClockwise(Selection);
-        int i = 0;
+        
+        List<BuildNodeData> SelectionCopy = new List<BuildNodeData>();
 
-
-        BuildNodeData buildNode = startNode;
-
-        // Loop through shapes nodes and connect points up with placed assets //
-        while (buildNode != null)
+        int index = 0;
+        foreach(var node in Selection)
         {
-            BuildAssetsBetween(buildNode, assetPack, root);
-            buildNode = buildNode.GetNext();
+            BuildNodeData newNode = new BuildNodeData();
 
-            if (buildNode == startNode) break;
+            newNode.position = node.position;
 
-            if (i > 100)
+            if (index != 0)
             {
-                Debug.LogError("!! Max Selection Iteration Reached !!");
-                break;
+                newNode.prev = (SelectionCopy[index - 1]);
+                SelectionCopy[index - 1].next = (newNode);
             }
-            i++;
+            if (index == Selection.Count - 1) 
+            { 
+                newNode.next = (SelectionCopy[0]);
+                SelectionCopy[0].prev = (newNode);
+            }
+
+            SelectionCopy.Add(newNode);
+
+            index++;
         }
+
+        SelectionCopy = ForceWindingOrderClockwise(SelectionCopy);
+        Selection = ForceWindingOrderClockwise(Selection);
+
+
 
 
         List<Rect> footprintShape = ConvertSelectionToRects(Selection);
-        i = 0;
+        int i = 0;
 
-        // Iterate through each extracted rect and fill //
-        foreach (Rect rect in footprintShape)
+        if (footprintShape.Count > 0)
         {
-
-            for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
+            // Iterate through each extracted rect and fill //
+            foreach (Rect rect in footprintShape)
             {
-                for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
-                {
-                    if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
-                }
-            }
-            i++;
-        }
 
+                for (float x = rect.x; x < (rect.x + rect.width); x += assetPack.gridSize)
+                {
+                    for (float y = rect.y; y < (rect.y + rect.height); y += assetPack.gridSize)
+                    {
+                        SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetDefaultObjects());
+                        if (Random.Range(0, 100) / 100.0f < assetPack.spreadDensity) PlaceAsset(asset.objectPrefab, root, new Vector3(x, startNode.position.y, y), asset.defaultRotation);
+                    }
+                }
+                i++;
+            }
+
+            i = 0;
+
+            BuildNodeData startNodeCopy = SelectionCopy[0];
+            BuildNodeData buildNode = startNodeCopy;
+
+            // Loop through shapes nodes and connect points up with placed assets //
+            while (buildNode != null)
+            {
+                BuildAssetsBetween(buildNode, assetPack, root);
+                buildNode = buildNode.GetNext();
+
+                if (buildNode == startNodeCopy) break;
+
+                if (i > 100)
+                {
+                    Debug.LogError("!! Max Selection Iteration Reached !!");
+                    break;
+                }
+                i++;
+            }
+
+        }
 
 
     }

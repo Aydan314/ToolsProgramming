@@ -442,7 +442,7 @@ public class AssetBaseBrush : ScriptableObject
         {
             if (insetCorners.Count > 0)
             {
-                return assetPack.GetInsetCornerObjects()[0];
+                return assetPack.PickRandomFromObjects(assetPack.GetInsetCornerObjects());
             }
             else if (defaults.Count > 0) return assetPack.GetDefaultObjects()[0];
             else return null;
@@ -452,7 +452,7 @@ public class AssetBaseBrush : ScriptableObject
 
         if (outsetCorners.Count > 0)
         {
-            return assetPack.GetOutsetCornerObjects()[0];
+            return assetPack.PickRandomFromObjects(assetPack.GetOutsetCornerObjects());
         }
         else if (defaults.Count > 0) return assetPack.GetDefaultObjects()[0];
         else return null;
@@ -471,7 +471,7 @@ public class AssetBaseBrush : ScriptableObject
 
         if (assetPack.GetOutsetCornerObjects().Count > 0)
         {
-            SpawnableObject asset = assetPack.spawnableObjects[0];
+            SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.spawnableObjects);
 
             // Places a corner asset if it is valid //
             if (node.GetPrev() != node && DetectNodeAtCorner(node))
@@ -488,7 +488,7 @@ public class AssetBaseBrush : ScriptableObject
         }
         if (assetPack.GetOutlineObjects().Count > 0)
         {
-            SpawnableObject asset = assetPack.GetOutlineObjects()[0];
+            SpawnableObject asset = assetPack.PickRandomFromObjects(assetPack.GetOutlineObjects());
 
             for (float i = assetPack.gridSize; i < distance; i += assetPack.gridSize)
             {

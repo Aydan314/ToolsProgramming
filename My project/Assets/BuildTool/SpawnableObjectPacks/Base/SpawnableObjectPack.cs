@@ -98,4 +98,9 @@ public class SpawnableObjectPack : ScriptableObject
 
         return cornerObjects;
     }
+
+    public SpawnableObject PickRandomFromObjects(List<SpawnableObject> objects)
+    {
+        return objects[UnityEngine.Random.Range(0, objects.Count)];
+    }
 }
