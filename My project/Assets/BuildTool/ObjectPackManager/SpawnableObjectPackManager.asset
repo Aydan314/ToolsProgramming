@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 731d5cd82de72454782f657646d0648d, type: 3}
+  m_Name: SpawnableObjectPackManager
+  m_EditorClassIdentifier: 
+  assetBasePacks:
+  - {fileID: 11400000, guid: cb73d378430d413428ae3c7bdf64ab33, type: 2}
+  - {fileID: 11400000, guid: 6501b9e6810005044baae08f63c40a17, type: 2}
+  - {fileID: 11400000, guid: b795621561375694788b31e4e4bdd9ca, type: 2}
+  - {fileID: 11400000, guid: 685ced84afe83e4429c6d55a6bde5c46, type: 2}
+  - {fileID: 11400000, guid: 870e414cf13650b43b5b8bfdc7997b31, type: 2}
+  - {fileID: 11400000, guid: d0548681c6330f14998d2955f8421bf8, type: 2}
+  - {fileID: 11400000, guid: 1a5ba1888d59f05449b79ccc284f5b0a, type: 2}
+  selectedPack: {fileID: 11400000, guid: 1a5ba1888d59f05449b79ccc284f5b0a, type: 2}

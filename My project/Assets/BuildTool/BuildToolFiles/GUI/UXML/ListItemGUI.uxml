@@ -1,0 +1,5 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <editor:ObjectField data-source-type="SpawnableObject, Assembly-CSharp" name="DataValue" binding-path="Object" type="SpawnableObject, Assembly-CSharp">
+        <engine:Button text="Remove" name="Remove" style="background-color: rgb(115, 88, 88);" />
+    </editor:ObjectField>
+</engine:UXML>

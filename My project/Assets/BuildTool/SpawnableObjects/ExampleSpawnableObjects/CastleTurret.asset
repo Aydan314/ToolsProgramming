@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49ca8287a89446c4d9152e529f1ac944, type: 3}
+  m_Name: CastleTurret
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 919132149155446097, guid: f6158ac3fd69c7944b1b74c4698dd123, type: 3}
+  defaultRotation: 0
+  isOutsetCornerObject: 1
+  isInsetCornerObject: 1
+  isOutlineObject: 1

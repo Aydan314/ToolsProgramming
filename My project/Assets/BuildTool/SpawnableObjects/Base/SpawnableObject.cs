@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,3 +12,5 @@ public class SpawnableObject : ScriptableObject
     public bool isInsetCornerObject;
     public bool isOutlineObject;
 }
+
+#endif
